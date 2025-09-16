@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "Tile.h"
+#include "Player.h"
 
 #include "Grid.h"
 #include "FrameRate.h"
@@ -20,7 +21,9 @@ int main()
     float friction = 0.999f;
     float fps = 60.f;
 
-    sf::Vector2f cellSize = {64.0f, 32.f};
+    sf::Vector2f cellSize = {32.0f, 16.f};
+    float scale = 2.f;
+    float depth = 32.f;
 
 	//-----INITIALIZE WINDOW-----
 
@@ -32,12 +35,14 @@ int main()
 	//-----INITIALIZE GAME-----
 
 
-    Grid grid(sf::Vector2f(windowSize), sf::Vector2f(windowSize.x / 2, -cellSize.y / 2), cellSize);
+    Grid grid(sf::Vector2f(windowSize), sf::Vector2f(windowSize.x / 2, -cellSize.y), cellSize, scale);
     grid.Initialize();
 
     FrameRate fr;
     fr.Initialize();
     fr.Load();
+
+    Player p1;
 
     Collision::m_g = gravity;
     Collision::m_b = bounce;
@@ -48,7 +53,7 @@ int main()
     {
         for (int y = 0; y < 20; y++)
         {
-            tiles.emplace_back(cellSize, sf::Vector2i(x, y), sf::Vector2f(windowSize.x / 2, 0.f), cellSize.y);
+            tiles.emplace_back(cellSize, sf::Vector2i(x, y), sf::Vector2f(windowSize.x / 2, 0.f), depth, scale);
         }
     }
 
@@ -88,6 +93,7 @@ int main()
         grid.Draw(window);
         fr.Draw(window);
         for (auto& t : tiles) t.Draw(window);
+        p1.Draw(window);
 
 		window.display();
 

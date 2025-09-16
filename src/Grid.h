@@ -9,13 +9,14 @@ class Grid
         sf::Vector2f m_pos;
         sf::Vector2f m_cellSize;
         sf::Color m_color;
+        float m_scale;
 
         sf::VertexArray m_xLines;
         sf::VertexArray m_yLines;
         sf::VertexArray m_vLines;
 
 	public:
-		Grid (const sf::Vector2f& gridSize, const sf::Vector2f& pos, const sf::Vector2f& cellSize);
+		Grid (const sf::Vector2f& gridSize, const sf::Vector2f& pos, const sf::Vector2f& cellSize, float scale);
 		~Grid();
 
 		void Initialize();

@@ -4,6 +4,8 @@
 FrameRate::FrameRate() :
 	timer(0)
 {
+    Initialize();
+    Load();
 }
 
 FrameRate::~FrameRate()

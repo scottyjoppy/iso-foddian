@@ -1,7 +1,7 @@
 #include "SheetLoader.h"
 #include <iostream>
 
-SheetLoader::SheetLoader(std::string fileDir, sf::Vector2i tileSize, sf::Vector2f spriteSize) :
+SheetLoader::SheetLoader(std::string fileDir, sf::Vector2i tileSize, sf::Vector2i spriteSize) :
     m_fileDir(fileDir), m_tileSize(tileSize), m_spriteSize(spriteSize)
 {
 }

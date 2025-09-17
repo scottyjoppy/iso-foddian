@@ -7,16 +7,16 @@ class Grid
 	private:
         sf::Vector2f m_gridSize;
         sf::Vector2f m_pos;
-        sf::Vector2f m_cellSize;
+        sf::Vector2i m_cellSize;
         sf::Color m_color;
-        float m_scale;
+        sf::Vector2f m_scale;
 
         sf::VertexArray m_xLines;
         sf::VertexArray m_yLines;
         sf::VertexArray m_vLines;
 
 	public:
-		Grid (const sf::Vector2f& gridSize, const sf::Vector2f& pos, const sf::Vector2f& cellSize, float scale);
+		Grid (const sf::Vector2f& gridSize, const sf::Vector2f& pos, const sf::Vector2i& cellSize);
 		~Grid();
 
 		void Initialize();

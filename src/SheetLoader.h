@@ -20,7 +20,7 @@ class SheetLoader
         std::string m_fileDir;
 
     public:
-        SheetLoader(std::string fileDir, sf::Vector2i tileSize, sf::Vector2f spriteSize);
+        SheetLoader(std::string fileDir, sf::Vector2i tileSize, sf::Vector2i spriteSize);
         ~SheetLoader();
 
         void Initialize();

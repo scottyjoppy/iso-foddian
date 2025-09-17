@@ -1,28 +1,32 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "SheetLoader.h"
+#include "SheetManager.h"
 
 class Player
 {
 	private:
 		sf::Texture m_texture;
+        sf::Sprite m_sprite;
 
-		sf::RectangleShape m_boundingRectangle;
-		sf::Vector2i m_size;
+        sf::Vector2i m_tileSize;
+        sf::Vector2f m_scale;
+        sf::Vector2f m_pos;
 
 		float m_playerSpeed;
-
-		int m_tileWidth;
-		int m_tileHeight;
-		sf::Vector2f m_scale;
-
-	public:
-		sf::Sprite m_sprite;
+        int index;
+        float movementRate;
+        float timer;
+        SheetID activeSheetID;
 
 	public:
 		Player();
 		~Player();
+
 		void Initialize();
 		void Load();
-		void Update();
+		void Update(float deltaTime);
 		void Draw(sf::RenderWindow& window);	
+
+        void SetActiveSheet(SheetID id);
 };

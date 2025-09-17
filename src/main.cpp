@@ -4,6 +4,7 @@
 #include "Tile.h"
 #include "Player.h"
 
+#include "SheetManager.h"
 #include "Grid.h"
 #include "FrameRate.h"
 #include "Math.h"
@@ -21,9 +22,8 @@ int main()
     float friction = 0.999f;
     float fps = 60.f;
 
-    sf::Vector2f cellSize = {32.0f, 16.f};
-    float scale = 2.f;
-    float depth = 32.f;
+    sf::Vector2i cellSize = {32, 16};
+    float depth = 0.f;
 
 	//-----INITIALIZE WINDOW-----
 
@@ -34,28 +34,24 @@ int main()
 
 	//-----INITIALIZE GAME-----
 
-
-    Grid grid(sf::Vector2f(windowSize), sf::Vector2f(windowSize.x / 2, -cellSize.y), cellSize, scale);
-    grid.Initialize();
-
-    FrameRate fr;
-    fr.Initialize();
-    fr.Load();
-
-    Player p1;
-
     Collision::m_g = gravity;
     Collision::m_b = bounce;
     Collision::m_f = friction;
 
+    Grid grid(sf::Vector2f(windowSize), sf::Vector2f(windowSize.x / 2, 0), cellSize);
     std::vector <Tile> tiles;
-    for (int x = 0; x < 20; x++)
+    for (int x = 0; x < 1; x++)
     {
-        for (int y = 0; y < 20; y++)
+        for (int y = 0; y < 1; y++)
         {
-            tiles.emplace_back(cellSize, sf::Vector2i(x, y), sf::Vector2f(windowSize.x / 2, 0.f), depth, scale);
+            tiles.emplace_back(cellSize, sf::Vector2i(x, y), sf::Vector2f(windowSize.x / 2, 0.f), depth);
         }
     }
+
+    FrameRate fr;
+    SheetManager::Load();
+
+    Player p1;
 
 	//-----GAME LOOP-----
 	
@@ -79,6 +75,7 @@ int main()
         while (accumulator >= fixedDt)
         {
             fr.Update(deltaTime);
+            p1.Update(deltaTime);
 
             accumulator -= fixedDt;
         }

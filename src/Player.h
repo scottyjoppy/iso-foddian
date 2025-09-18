@@ -6,18 +6,30 @@
 class Player
 {
 	private:
-		sf::Texture m_texture;
+        sf::RectangleShape m_rectBounds;
+        SheetID activeSheetID;
+        sf::Texture m_texture;
         sf::Sprite m_sprite;
 
-        sf::Vector2i m_tileSize;
-        sf::Vector2f m_scale;
-        sf::Vector2f m_pos;
+        sf::Vector2f m_tileSize;
+        float m_scale;
 
-		float m_playerSpeed;
-        int index;
-        float movementRate;
-        float timer;
-        SheetID activeSheetID;
+        sf::Vector3f m_spritePos;
+        sf::Vector3f m_currPos;
+        sf::Vector3f m_prevPos;
+        sf::Vector3f m_vel;
+
+        sf::Vector3f m_moveStep;
+        float m_playerSpeed;
+        float m_jumpInitVel;
+
+        float moveRate;
+        float textureTimer;
+        int sheetIdx;
+
+        bool isJumping;
+
+        sf::CircleShape m_shadow;
 
 	public:
 		Player();
@@ -25,7 +37,7 @@ class Player
 
 		void Initialize();
 		void Load();
-		void Update(float deltaTime);
+		void Update(float deltaTime, float acc, float friction);
 		void Draw(sf::RenderWindow& window);	
 
         void SetActiveSheet(SheetID id);

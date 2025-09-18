@@ -17,7 +17,7 @@ sf::Vector2u windowSize(1920, 1080);
 int main()
 {
     // MAGIC
-    float gravity = 0.5f;
+    float gravity = -9.8f * 100.f;
     float bounce = 0.9f;
     float friction = 0.999f;
     float fps = 60.f;
@@ -38,13 +38,19 @@ int main()
     Collision::m_b = bounce;
     Collision::m_f = friction;
 
-    Grid grid(sf::Vector2f(windowSize), sf::Vector2f(windowSize.x / 2, 0), cellSize);
+    Grid grid(sf::Vector2f(windowSize), sf::Vector2f(windowSize.x / 2, windowSize.y / 3), cellSize);
+    
     std::vector <Tile> tiles;
-    for (int x = 0; x < 1; x++)
+
+    sf::Texture tileTexture;
+    if (!tileTexture.loadFromFile("assets/textures/tiles/tiletop.png"))
+        std::cerr << "Failed to load texture" << std::endl;
+
+    for (int x = 0; x < 10; x++)
     {
-        for (int y = 0; y < 1; y++)
+        for (int y = 0; y < 10; y++)
         {
-            tiles.emplace_back(cellSize, sf::Vector2i(x, y), sf::Vector2f(windowSize.x / 2, 0.f), depth);
+            tiles.emplace_back(cellSize, sf::Vector2i(x, y), sf::Vector2f(windowSize.x / 2, windowSize.y / 3), depth, &tileTexture);
         }
     }
 
@@ -75,7 +81,7 @@ int main()
         while (accumulator >= fixedDt)
         {
             fr.Update(deltaTime);
-            p1.Update(deltaTime);
+            p1.Update(deltaTime, gravity, friction);
 
             accumulator -= fixedDt;
         }

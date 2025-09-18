@@ -14,7 +14,8 @@ Grid::~Grid()
 
 void Grid::Initialize()
 {
-    m_scale = Math::CalcScale(m_cellSize);
+    float tempScale = Math::CalcScale(sf::Vector2f(m_cellSize));
+    m_scale = {tempScale, tempScale};
 
     m_xLines.setPrimitiveType(sf::Lines);
     for (int x = 0; x <= m_gridSize.x; x++)

@@ -23,23 +23,31 @@ sf::Vector2f Math::Velocity(sf::Vector2f pos, sf::Vector2f prePos, float frictio
     return (pos - prePos) * friction;
 }
 
-sf::Vector2f Math::CalcScale(sf::Vector2i tileSize)
+float Math::CalcScale(sf::Vector2f tileSize)
 {
 	float defaultSize = GLOBALTILESIZE;
 
-	sf::Vector2f scale;
+	float scale;
 
 	int maxDimension = std::max(tileSize.x, tileSize.y);
 
 	float scaleFactor = defaultSize / maxDimension;
-	scale.x = scaleFactor;
-	scale.y = scaleFactor;
+	scale = scaleFactor;
 
-    if (scale.x < 0 || scale.y < 0)
+    if (scale < 0)
     {
         std::cout << "Negative Scale" << std::endl;
-        return sf::Vector2f(1.f, 1.f);
+        return 1.f;
     }
 
 	return scale;
- }
+}
+
+sf::Vector2f Math::SolveForXY(float c)
+{
+    if (c <= 0.0f)
+        return {0.f, 0.f};
+    float longer = c;
+    float shorter = c * 0.5f;
+    return {longer, shorter};
+}

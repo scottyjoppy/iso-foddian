@@ -1,29 +1,31 @@
 #pragma once
-
 #include <SFML/Graphics.hpp>
+
+#include "SheetLoader.h"
+#include "SheetManager.h"
 
 class Tile
 {
     public:
-        std::vector <sf::Sprite> m_sprites;
+        sf::ConvexShape m_conBounds;
+        SheetID activeSheetID;
+        sf::Texture m_texture;
+        sf::Sprite m_sprite;
 
-        sf::Vector2f m_pos;
-        sf::Vector2f m_color;
-        sf::Vector2i m_tileSize;
-        sf::Vector2i m_gridIndex;
-        sf::Vector2f m_scale;
+        sf::Vector2f m_tileSize;
+        float m_scale;
 
-        int m_sides;
-        float m_depth;
+        sf::Vector3f m_tilePos;
 
-        sf::Texture* m_texture;
+        int sheetIdx;
 
     public:
-        Tile(const sf::Vector2i& tileSize, const sf::Vector2i& gridIndex, const sf::Vector2f& pos, float depth, sf::Texture* tex);
+        Tile(const sf::Vector2f& tileSize, const sf::Vector3f& tilePos);
         ~Tile();
 
         void Initialize();
-        void SetGridPos(sf::Vector2f pos);
+        void Load();
         void Draw(sf::RenderWindow& window);
-        void IsoTransform();
+
+        void SetActiveSheet(SheetID id);
 };

@@ -12,18 +12,18 @@ Player::Player() :
     // Position
     m_spritePos(500, 0, 500),
     m_currPos(m_spritePos),
-    m_prevPos(m_spritePos - sf::Vector3f(0.f, -20.f, 0.f)),
+    m_prevPos(m_spritePos),
     m_vel(0.f, 0.f, 0.f),
     // Movement
     m_moveStep(10.f, 10.f, 10.f),
     m_playerSpeed(500.f),
-    m_jumpInitVel(900.f),
+    m_jumpInitVel(500.f),
     // Timers
     moveRate(0.2f),
     textureTimer(0.f),
     sheetIdx(0),
     // Bools
-    isJumping(false)
+    isJumping(true)
 {
     Initialize();
     Load();
@@ -36,13 +36,15 @@ Player::~Player()
 void Player::Initialize()
 {
     m_scale = Math::CalcScale(m_tileSize);
-    m_tileSize.x *= m_scale;
-    m_tileSize.y *= m_scale;
+    m_tileSize *= m_scale;
 
     m_shadow.setRadius(m_tileSize.x / 4);
     m_shadow.setFillColor(sf::Color(0, 0, 0, 128));
     m_shadow.setOrigin(-m_tileSize.x / 4.5f, -m_tileSize.y * 1.6f);
     m_shadow.setScale(1.f, 0.5f);
+
+    m_shadow.setPosition(m_spritePos.x, m_spritePos.z);
+    m_sprite.setPosition(m_spritePos.x, -m_spritePos.y + m_spritePos.z);
 }
 
 void Player::Load()

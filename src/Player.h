@@ -1,11 +1,12 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+
 #include "SheetLoader.h"
 #include "SheetManager.h"
 
 class Player
 {
-	private:
+	public:
         sf::RectangleShape m_rectBounds;
         SheetID activeSheetID;
         sf::Texture m_texture;

@@ -40,19 +40,7 @@ int main()
 
     Grid grid(sf::Vector2f(windowSize), sf::Vector2f(windowSize.x / 2, windowSize.y / 3), cellSize);
     
-    std::vector <Tile> tiles;
-
-    sf::Texture tileTexture;
-    if (!tileTexture.loadFromFile("assets/textures/tiles/tiletop.png"))
-        std::cerr << "Failed to load texture" << std::endl;
-
-    for (int x = 0; x < 10; x++)
-    {
-        for (int y = 0; y < 10; y++)
-        {
-            tiles.emplace_back(cellSize, sf::Vector2i(x, y), sf::Vector2f(windowSize.x / 2, windowSize.y / 3), depth, &tileTexture);
-        }
-    }
+    Tile tiles(sf::Vector2f(cellSize.x, cellSize.y), sf::Vector3f(500, 500, 500));
 
     FrameRate fr;
     SheetManager::Load();
@@ -76,6 +64,13 @@ int main()
 		{
 			if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 				window.close();
+            else if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+            {
+                p1.m_spritePos = sf::Vector3f(500, 500, 500);
+                p1.m_prevPos = p1.m_spritePos;
+                p1.isJumping = true;
+            }
+
 		}
 
         while (accumulator >= fixedDt)
@@ -95,7 +90,7 @@ int main()
 
         grid.Draw(window);
         fr.Draw(window);
-        for (auto& t : tiles) t.Draw(window);
+        tiles.Draw(window);
         p1.Draw(window);
 
 		window.display();

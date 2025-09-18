@@ -5,7 +5,8 @@
 enum class SheetID
 {
     PlayerIdle,
-    PlayerWalk
+    PlayerWalk,
+    Floor
 };
 
 class SheetManager

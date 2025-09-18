@@ -2,11 +2,13 @@
 #include "Math.h"
 #include <iostream>
 
-Tile::Tile(const sf::Vector2i& tileSize, const sf::Vector2i& gridIndex, const sf::Vector2f& pos, float depth, sf::Texture* tex)
-    : m_tileSize(tileSize), m_gridIndex(gridIndex), m_pos(pos), m_depth(depth), m_sides(3), m_scale(1.f, 1.f), m_texture(tex)
+Tile::Tile(const sf::Vector2f& tileSize, const sf::Vector3f& tilePos) :
+    m_tileSize(tileSize), 
+    m_scale(1.f), 
+    m_tilePos(tilePos),
+    sheetIdx(0)
 {
     Initialize();
-    IsoTransform();
 }
 
 Tile::~Tile()
@@ -15,26 +17,31 @@ Tile::~Tile()
 
 void Tile::Initialize()
 {
-
-    float tempScale = Math::CalcScale(sf::Vector2f(m_tileSize.y, m_tileSize.y));
-    m_scale = {tempScale, tempScale};
-    m_sprites.resize(m_sides);
-
-    for (auto& sprite : m_sprites)
-    {
-        sprite.setTexture(*m_texture);
-        sprite.setScale(m_scale);
-    }
+    m_scale = Math::CalcScale(m_tileSize);
+    m_tileSize *= m_scale;
 }
-void Tile::IsoTransform()
-{
-    float isoX = (m_gridIndex.x - m_gridIndex.y) * (m_tileSize.x / 2.f * m_scale.x - m_tileSize.x * 1.5f) + m_pos.x - (m_tileSize.x * m_scale.x / 4.f);
-    float isoY = (m_gridIndex.x + m_gridIndex.y) * (m_tileSize.y / 2.f * m_scale.y - m_tileSize.y * 1.5f) + m_pos.y;
 
-    for (auto& s : m_sprites) s.setPosition(isoX, isoY);
+void Tile::Load()
+{
+    SheetManager::Load();
+    SetActiveSheet(SheetID::Floor);
+
+    SheetLoader& sheet = SheetManager::Get(activeSheedID);
 }
 
 void Tile::Draw(sf::RenderWindow& window)
 {
-    for (auto& s : m_sprites) window.draw(s);
+    window.draw(m_sprite);
+}
+
+void Tile::SetActiveSheet(SheetID id)
+{
+    activeSheetID = id;
+    sheetIdx = 0;
+
+    auto& sheet = SheetManager::Get(id);
+    m_texture = sheet.m_texture;
+    m_sprite.setTexture(m_texture);
+    m_sprite.setTextureRect(sheet.frames[0].rect);
+    m_sprite.setScale(m_scale, m_scale);
 }

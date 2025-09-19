@@ -9,7 +9,7 @@ class Player
 	public:
         sf::RectangleShape m_rectBounds;
         SheetID activeSheetID;
-        sf::Texture m_texture;
+        sf::Texture* m_texture;
         sf::Sprite m_sprite;
 
         sf::Vector2f m_tileSize;

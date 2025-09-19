@@ -49,7 +49,6 @@ void Player::Initialize()
 
 void Player::Load()
 {
-    SheetManager::Load();
     SetActiveSheet(SheetID::PlayerIdle);
 }
 
@@ -144,8 +143,8 @@ void Player::SetActiveSheet(SheetID id)
     sheetIdx = 0;
 
     auto& sheet = SheetManager::Get(id);
-    m_texture = sheet.m_texture;
-    m_sprite.setTexture(m_texture);
+    m_texture = &sheet.m_texture;
+    m_sprite.setTexture(*m_texture);
     m_sprite.setTextureRect(sheet.frames[0].rect);
     m_sprite.setScale(m_scale, m_scale);
 }

@@ -7,10 +7,11 @@
 class SheetLoader
 {
     public:
-        sf::Vector2i m_tileSize;
+        sf::Vector2f m_tileSize;
         sf::Vector2f m_spriteSize;
         sf::Vector2i m_index;
         sf::Vector2u m_sheetSize;
+        float m_scale;
 
 		sf::Texture m_texture;
 		sf::RectangleShape m_boundingRectangle;

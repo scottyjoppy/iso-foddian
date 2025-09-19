@@ -9,18 +9,19 @@ class Tile
     public:
         sf::ConvexShape m_conBounds;
         SheetID activeSheetID;
-        sf::Texture m_texture;
+        sf::Texture* m_texture;
         sf::Sprite m_sprite;
 
         sf::Vector2f m_tileSize;
         float m_scale;
 
         sf::Vector3f m_tilePos;
+        sf::Vector3i m_gridCoords;
 
         int sheetIdx;
 
     public:
-        Tile(const sf::Vector2f& tileSize, const sf::Vector3f& tilePos);
+        Tile(const sf::Vector2f& tileSize,  sf::Vector3i gridCoords);
         ~Tile();
 
         void Initialize();

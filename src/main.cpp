@@ -4,6 +4,7 @@
 #include "Tile.h"
 #include "Player.h"
 
+#include "TileMap.h"
 #include "SheetManager.h"
 #include "Grid.h"
 #include "FrameRate.h"
@@ -22,7 +23,8 @@ int main()
     float friction = 0.999f;
     float fps = 60.f;
 
-    sf::Vector2i cellSize = {32, 16};
+    sf::Vector2f cellSize = {32, 16};
+    sf::Vector2f scaledCellSize = cellSize * Math::CalcScale(cellSize);
     float depth = 0.f;
 
 	//-----INITIALIZE WINDOW-----
@@ -33,6 +35,7 @@ int main()
 	window.setFramerateLimit(fps);
 
 	//-----INITIALIZE GAME-----
+    SheetManager::Load();
 
     Collision::m_g = gravity;
     Collision::m_b = bounce;
@@ -40,7 +43,9 @@ int main()
 
     Grid grid(sf::Vector2f(windowSize), sf::Vector2f(windowSize.x / 2, windowSize.y / 3), cellSize);
     
-    Tile tiles(sf::Vector2f(cellSize.x, cellSize.y), sf::Vector3f(500, 500, 500));
+    std::vector<std::vector<Tile>> tiles;
+
+    TileMap map(10, 10, 2, cellSize);
 
     FrameRate fr;
     SheetManager::Load();
@@ -66,7 +71,7 @@ int main()
 				window.close();
             else if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::R))
             {
-                p1.m_spritePos = sf::Vector3f(500, 500, 500);
+                p1.m_spritePos = sf::Vector3f(windowSize.x / 2, 500, windowSize.y / 2);
                 p1.m_prevPos = p1.m_spritePos;
                 p1.isJumping = true;
             }
@@ -90,7 +95,7 @@ int main()
 
         grid.Draw(window);
         fr.Draw(window);
-        tiles.Draw(window);
+        map.Draw(window, {windowSize.x / 2.f - scaledCellSize.x / 2, windowSize.y / 3.f});
         p1.Draw(window);
 
 		window.display();

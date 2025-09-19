@@ -43,11 +43,10 @@ float Math::CalcScale(sf::Vector2f tileSize)
 	return scale;
 }
 
-sf::Vector2f Math::SolveForXY(float c)
+sf::Vector2f Math::IsoTransform(int x, int y, int z, sf::Vector2f tileSize)
 {
-    if (c <= 0.0f)
-        return {0.f, 0.f};
-    float longer = c;
-    float shorter = c * 0.5f;
-    return {longer, shorter};
+    float isoX = (x - y) * (tileSize.x / 2.f);
+    float isoY = (x + y) * (tileSize.y / 2.f) - z * tileSize.y;
+
+    return {isoX, isoY};
 }

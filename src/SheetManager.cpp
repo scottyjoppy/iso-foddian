@@ -8,7 +8,11 @@ void SheetManager::Load()
     sheets.emplace(SheetID::PlayerWalk, SheetLoader("assets/textures/player/walk.png", {80, 80}, {16, 16}));
     sheets.emplace(SheetID::Floor, SheetLoader("assets/textures/tiles/tiletop.png", {16, 8}, {16, 8}));
 
-    for (auto& [id, sheet] : sheets) sheet.Load();
+    for (auto& [id, sheet] : sheets)
+    {
+        sheet.Initialize();
+        sheet.Load();
+    }
 }
 
 SheetLoader& SheetManager::Get(SheetID id)

@@ -2,7 +2,7 @@
 #include "Math.h"
 #include <iostream>
 
-Grid::Grid (const sf::Vector2f& gridSize, const sf::Vector2f& pos, const sf::Vector2i& cellSize) :
+Grid::Grid (const sf::Vector2f& gridSize, const sf::Vector2f& pos, const sf::Vector2f& cellSize) :
     m_gridSize(gridSize), m_pos(pos), m_cellSize(cellSize), m_color(sf::Color::Black), m_scale(1.f, 1.f)
 {
     Initialize();

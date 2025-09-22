@@ -2,22 +2,10 @@
 #include <iostream>
 #include "Math.h"
 
-TileMap::TileMap(int width, int height, int layers, sf::Vector2f tileSize, sf::Vector2f mapOffset) :
-    m_width(width), m_height(height), m_layers(layers), m_tileSize(tileSize)
+TileMap::TileMap(const std::string& mapFile, sf::Vector2f tileSize, sf::Vector2f mapOffset) :
+    m_tileSize(tileSize), m_mapOffset(mapOffset)
 {
-    Initialize();
-    m_cubeTiles.resize(layers);
-    for (int z = 0; z < layers; z++)
-    {
-        m_cubeTiles[z].resize(height);
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                m_cubeTiles[z][y].emplace_back(tileSize, sf::Vector3i(x, y, z), mapOffset);
-            }
-        }
-    }
+    Load(mapFile);
 }
 
 TileMap::~TileMap()
@@ -26,19 +14,52 @@ TileMap::~TileMap()
 
 void TileMap::Initialize()
 {
-    std::cout << "Initializing TileMap" << std::endl;
-    m_scale = Math::CalcScale(m_tileSize);
 }
+
+void TileMap::Load(const std::string& mapFile)
+{
+    if (!mapLoader.Load(mapFile, md))
+    {
+        std::cerr << "Failed to load map: " << mapFile << std::endl;
+        return;
+    }
+
+    m_width = md.mapW;
+    m_height = md.mapH;
+    m_layers = 1;
+
+    m_tiles.resize(m_layers);
+    for (int z = 0; z < m_layers; z++)
+    {
+        m_tiles[z].resize(m_height);
+        for (int y = 0; y < m_height; y++)
+        {
+            for (int x = 0; x < m_width; x++)
+            {
+                int index = y * m_width + x;
+                int tileId = md.tileIds[index];
+                m_tiles[z][y].emplace_back
+                    (
+                     m_tileSize,
+                     sf::Vector3i(x, y, z),
+                     tileId,
+                     m_mapOffset
+                    );
+            }
+        }
+    }
+}
+
 
 void TileMap::Draw(sf::RenderWindow& window)
 {
-    for (auto& layer : m_cubeTiles)
+    for (auto& layer : m_tiles)
     {
         for (auto& row : layer)
         {
-            for (auto& cube : row)
+            for (auto& tile : row)
             {
-                cube.Draw(window);
+                tile.Draw(window);
             }
         }
     }

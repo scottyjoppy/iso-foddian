@@ -43,9 +43,7 @@ int main()
 
     Grid grid(sf::Vector2f(windowSize), sf::Vector2f(windowSize.x / 2, windowSize.y / 3), cellSize);
     
-    std::vector<std::vector<Tile>> tiles;
-
-    TileMap map(10, 10, 2, cellSize);
+    TileMap map(10, 10, 1, cellSize, {windowSize.x / 2.f - scaledCellSize.x / 2, windowSize.y / 3.f});
 
     FrameRate fr;
     SheetManager::Load();
@@ -95,7 +93,7 @@ int main()
 
         grid.Draw(window);
         fr.Draw(window);
-        map.Draw(window, {windowSize.x / 2.f - scaledCellSize.x / 2, windowSize.y / 3.f});
+        map.Draw(window);
         p1.Draw(window);
 
 		window.display();

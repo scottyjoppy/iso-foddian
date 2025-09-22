@@ -2,9 +2,10 @@
 #include "Math.h"
 #include "SheetLoader.h"
 
-SheetLoader::SheetLoader(std::string fileDir, sf::Vector2i tileSize, sf::Vector2i spriteSize) :
-    m_fileDir(fileDir), m_tileSize(tileSize), m_spriteSize(spriteSize)
+SheetLoader::SheetLoader(std::string fileDir, sf::Vector2i tileSize, sf::Vector2i spriteSize, sf::Vector2f origin) :
+    m_fileDir(fileDir), m_tileSize(tileSize), m_spriteSize(spriteSize), m_origin(origin)
 {
+    Initialize();
 }
 
 SheetLoader::~SheetLoader()
@@ -18,7 +19,10 @@ void SheetLoader::Initialize()
 
 void SheetLoader::Load()
 {
-    m_texture.loadFromFile(m_fileDir);
+    if (!m_texture.loadFromFile(m_fileDir))
+        std::cout << "Failed to load " << m_fileDir << std::endl;
+    else
+        std::cout << "Successfully loaded " << m_fileDir << std::endl;
 
     m_sheetSize = {m_texture.getSize().x, m_texture.getSize().y};
 

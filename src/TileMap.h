@@ -1,12 +1,12 @@
 #pragma once
-#include "Tile.h"
+#include "CubeTile.h"
 
 #include <SFML/Graphics.hpp>
 
 class TileMap
 {
     public:
-        std::vector<std::vector<std::vector<Tile>>> m_tiles;
+        std::vector<std::vector<std::vector<CubeTile>>> m_cubeTiles;
         sf::Vector2f m_tileSize;
 
         float m_scale;
@@ -16,9 +16,9 @@ class TileMap
         int m_layers;
 
     public:
-        TileMap(int width, int height, int layers, sf::Vector2f tileSize);
+        TileMap(int width, int height, int layers, sf::Vector2f tileSize, sf::Vector2f mapOffset);
         ~TileMap();
         
         void Initialize();
-        void Draw(sf::RenderWindow& window, sf::Vector2f offset);
+        void Draw(sf::RenderWindow& window);
 };

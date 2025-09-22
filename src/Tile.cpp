@@ -2,12 +2,14 @@
 #include "Math.h"
 #include <iostream>
 
-Tile::Tile(const sf::Vector2f& tileSize, sf::Vector3i gridCoords) :
+Tile::Tile(const sf::Vector2f& tileSize, sf::Vector3i gridCoords, SheetID sheetID, const sf::Vector2f& mapOffset) :
     m_tileSize(tileSize), 
-    m_scale(1.f), 
+    m_scale(1.f),
     m_gridCoords(gridCoords),
-    sheetIdx(0)
+    activeSheetID(sheetID),
+    m_mapOffset(mapOffset)
 {
+    SetActiveSheet(activeSheetID);
     Initialize();
     Load();
 }
@@ -18,13 +20,15 @@ Tile::~Tile()
 
 void Tile::Initialize()
 {
+    m_scale = Math::CalcScale(m_tileSize);
+    sf::Vector2f pos = Math::IsoTransform(m_gridCoords.x, m_gridCoords.y, m_gridCoords.z, m_tileSize * m_scale);
+    
+    m_sprite.setPosition(pos + m_mapOffset);
+    m_sprite.setScale(m_scale * 2.f, m_scale * 2.f);
 }
 
 void Tile::Load()
 {
-    SetActiveSheet(SheetID::Floor);
-
-    SheetLoader& sheet = SheetManager::Get(activeSheetID);
 }
 
 void Tile::Draw(sf::RenderWindow& window)
@@ -35,11 +39,14 @@ void Tile::Draw(sf::RenderWindow& window)
 void Tile::SetActiveSheet(SheetID id)
 {
     activeSheetID = id;
-    sheetIdx = 0;
 
     auto& sheet = SheetManager::Get(id);
     m_texture = &sheet.m_texture;
     m_sprite.setTexture(*m_texture);
-    m_sprite.setTextureRect(sheet.frames[0].rect);
-    m_sprite.setScale(sheet.m_scale, sheet.m_scale);
+
+    if (!sheet.frames.empty())
+        m_sprite.setTextureRect(sheet.frames[0].rect);
+    else
+        std::cerr << "Warning: Sheet " << static_cast<int>(id) << " has no frames!" << std::endl;
+    m_sprite.setOrigin(sheet.m_origin);
 }

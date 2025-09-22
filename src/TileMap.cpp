@@ -1,22 +1,23 @@
 #include "TileMap.h"
+#include <iostream>
 #include "Math.h"
 
-TileMap::TileMap(int width, int height, int layers, sf::Vector2f tileSize) :
+TileMap::TileMap(int width, int height, int layers, sf::Vector2f tileSize, sf::Vector2f mapOffset) :
     m_width(width), m_height(height), m_layers(layers), m_tileSize(tileSize)
 {
-    m_tiles.resize(layers);
+    Initialize();
+    m_cubeTiles.resize(layers);
     for (int z = 0; z < layers; z++)
     {
-        m_tiles[z].resize(height);
+        m_cubeTiles[z].resize(height);
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
-                m_tiles[z][y].emplace_back(tileSize, sf::Vector3i(x, y, z));
+                m_cubeTiles[z][y].emplace_back(tileSize, sf::Vector3i(x, y, z), mapOffset);
             }
         }
     }
-    Initialize();
 }
 
 TileMap::~TileMap()
@@ -25,20 +26,19 @@ TileMap::~TileMap()
 
 void TileMap::Initialize()
 {
+    std::cout << "Initializing TileMap" << std::endl;
     m_scale = Math::CalcScale(m_tileSize);
 }
 
-void TileMap::Draw(sf::RenderWindow& window, sf::Vector2f mapOffset)
+void TileMap::Draw(sf::RenderWindow& window)
 {
-    for (auto& layer : m_tiles)
+    for (auto& layer : m_cubeTiles)
     {
         for (auto& row : layer)
         {
-            for (auto& tile : row)
+            for (auto& cube : row)
             {
-                sf::Vector2f pos = Math::IsoTransform(tile.m_gridCoords.x, tile.m_gridCoords.y, tile.m_gridCoords.z, tile.m_tileSize) * m_scale;
-                tile.m_sprite.setPosition(pos + mapOffset);
-                tile.Draw(window);
+                cube.Draw(window);
             }
         }
     }

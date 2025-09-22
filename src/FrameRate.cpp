@@ -20,6 +20,7 @@ void FrameRate::Load()
 {
 	if (font.loadFromFile("assets/fonts/consola.ttf"))
 	{
+        std::cout << "Loading FrameRate text" << std::endl;
 		frameRateText.setFont(font);
         frameRateText.setFillColor(sf::Color::Black);
 	}

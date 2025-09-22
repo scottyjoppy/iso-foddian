@@ -17,11 +17,10 @@ class Tile
 
         sf::Vector3f m_tilePos;
         sf::Vector3i m_gridCoords;
-
-        int sheetIdx;
+        sf::Vector2f m_mapOffset;
 
     public:
-        Tile(const sf::Vector2f& tileSize,  sf::Vector3i gridCoords);
+        Tile(const sf::Vector2f& tileSize, sf::Vector3i gridCoords, SheetID sheetID, const sf::Vector2f& mapOffset);
         ~Tile();
 
         void Initialize();

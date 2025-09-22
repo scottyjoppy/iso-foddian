@@ -35,6 +35,7 @@ Player::~Player()
 
 void Player::Initialize()
 {
+    std::cout << "Initializing Player" << std::endl;
     m_scale = Math::CalcScale(m_tileSize);
     m_tileSize *= m_scale;
 
@@ -49,6 +50,7 @@ void Player::Initialize()
 
 void Player::Load()
 {
+    std::cout << "Loading sheet into Player" << std::endl;
     SetActiveSheet(SheetID::PlayerIdle);
 }
 

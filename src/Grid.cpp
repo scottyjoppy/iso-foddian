@@ -14,6 +14,7 @@ Grid::~Grid()
 
 void Grid::Initialize()
 {
+    std::cout << "Initializing grid" << std::endl;
     float tempScale = Math::CalcScale(sf::Vector2f(m_cellSize));
     m_scale = {tempScale, tempScale};
 

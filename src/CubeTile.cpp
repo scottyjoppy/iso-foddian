@@ -19,20 +19,36 @@ void CubeTile::Initialize()
 {
     m_scale = Math::CalcScale(m_tileSize);
     sf::Vector2f pos = Math::IsoTransform(m_gridCoords.x, m_gridCoords.y, m_gridCoords.z, m_tileSize * m_scale);
-    m_sprite.setPosition(pos + m_mapOffset);
+
+    sf::Vector2f mapPos = pos + m_mapOffset;
+    m_sprite.setPosition(mapPos);
     m_sprite.setScale(m_scale * 2.f, m_scale * 2.f);
 
-    m_bounds.setPointCount(4);
-    m_bounds.setPoint(0, {0.f, 0.f});
-    m_bounds.setPoint(1, {m_tileSize.x * m_scale, 0.f});
-    m_bounds.setPoint(2, {m_tileSize.x * m_scale, m_tileSize.y * m_scale});
-    m_bounds.setPoint(3, {0.f, m_tileSize.y * m_scale});
-    m_bounds.setPosition(pos + m_mapOffset);
+    float cubeHeight = m_tileSize.y * m_scale;
+
+    mapPos += sf::Vector2f(m_tileSize.x * m_scale / 2, 0);
+
+    if (cubeHeight > 0.f)
+    {
+        m_bounds.BuildTop(mapPos, m_tileSize * m_scale, cubeHeight);
+        m_bounds.BuildWallLeft(mapPos, m_tileSize * m_scale, cubeHeight);
+        m_bounds.BuildWallRight(mapPos, m_tileSize * m_scale, cubeHeight);
+        m_bounds.BuildWallBackL(mapPos, m_tileSize * m_scale, cubeHeight);
+        m_bounds.BuildWallBackR(mapPos, m_tileSize * m_scale, cubeHeight);
+    }
+    m_bounds.BuildBottom(mapPos, m_tileSize * m_scale);
 }
 
 void CubeTile::Draw(sf::RenderWindow& window)
 {
-    window.draw(m_sprite);
+    //window.draw(m_sprite);
+
+    window.draw(m_bounds.GetTop());
+    window.draw(m_bounds.GetBottom());
+    window.draw(m_bounds.GetWallLeft());
+    window.draw(m_bounds.GetWallRight());
+    window.draw(m_bounds.GetWallBackL());
+    window.draw(m_bounds.GetWallBackR());
 }
 
 void CubeTile::SetTile(int tileId)

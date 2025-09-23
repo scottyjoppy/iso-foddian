@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-#include "Tile.h"
+#include "TileBounds.h"
 
 class CubeTile
 {
@@ -12,7 +12,7 @@ class CubeTile
         sf::Vector2f m_mapOffset;
         float m_scale;
 
-        sf::ConvexShape m_bounds;
+        TileBounds m_bounds;
 
     public:
         CubeTile(const sf::Vector2f& tileSize, sf::Vector3i gridCoords, int tileId, const sf::Vector2f& mapOffset);
@@ -21,4 +21,7 @@ class CubeTile
         void Initialize();
         void Draw(sf::RenderWindow& window);
         void SetTile(int tileId);
+
+        const TileBounds& GetBounds() const { return m_bounds; }
+        const sf::Vector3i& GetGridCoords() const { return m_gridCoords; }
 };

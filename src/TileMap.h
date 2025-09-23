@@ -27,4 +27,6 @@ class TileMap
         void Initialize();
         void Load(const std::string& mapFile);
         void Draw(sf::RenderWindow& window);
+
+        std::vector<CubeTile*> GetAllTiles();
 };

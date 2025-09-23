@@ -64,3 +64,19 @@ void TileMap::Draw(sf::RenderWindow& window)
         }
     }
 }
+
+std::vector<CubeTile*> TileMap::GetAllTiles()
+{
+    std::vector<CubeTile*> allTiles;
+    for (auto& layer : m_tiles)
+    {
+        for (auto& row : layer)
+        {
+            for (auto& tile : row)
+            {
+                allTiles.push_back(&tile);
+            }
+        }
+    }
+    return allTiles;
+}

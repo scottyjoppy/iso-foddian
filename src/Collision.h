@@ -1,6 +1,7 @@
 #pragma once
-
 #include <SFML/Graphics.hpp>
+
+#include "CubeTile.h"
 
 class Collision
 {
@@ -10,5 +11,10 @@ class Collision
         inline static float m_f = 0.f;
 
     public:
-        static void CircleVsWindow(sf::Vector2f& pos, sf::Vector2f& prePos, sf::Vector2f& v, const float r, const sf::RenderWindow& window);
+        static std::vector<const CubeTile*> TilesUnderPlayer(const sf::RectangleShape& playerRect, const std::vector<CubeTile*>& tiles);
+        static std::vector<sf::Vector2f> PlayerBottomPoints(const sf::RectangleShape& player);
+        static std::vector<sf::Vector2f> PlayerTopPoints(const sf::RectangleShape& player);
+        static std::vector<sf::Vector2f> GetConvexPoints(const sf::ConvexShape& shape);
+        static bool PlayerVsCubeTileSAT(const sf::RectangleShape& playerRect, const std::vector<CubeTile*>& tiles);
+
 };

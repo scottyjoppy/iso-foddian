@@ -46,6 +46,11 @@ void Player::Initialize()
 
     m_shadow.setPosition(m_spritePos.x, m_spritePos.z);
     m_sprite.setPosition(m_spritePos.x, -m_spritePos.y + m_spritePos.z);
+
+    m_bounds.setOutlineColor(sf::Color::Black);
+    m_bounds.setOutlineThickness(1);
+    m_bounds.setFillColor(sf::Color(255, 255, 0, 80));
+    m_bounds.setSize(sf::Vector2f(m_tileSize.x * 0.6f, m_tileSize.y - 10.f));
 }
 
 void Player::Load()
@@ -131,12 +136,14 @@ void Player::Update(float deltaTime, float acc, float friction)
     
     m_shadow.setPosition(m_spritePos.x, m_spritePos.z);
     m_sprite.setPosition(m_spritePos.x, -m_spritePos.y + m_spritePos.z);
+    m_bounds.setPosition(m_sprite.getPosition().x + m_bounds.getSize().x / 3.4f, m_sprite.getPosition().y + 10.f);
 }
 
 void Player::Draw(sf::RenderWindow& window)
 {
     window.draw(m_shadow);
     window.draw(m_sprite);
+    window.draw(m_bounds);
 }
 
 void Player::SetActiveSheet(SheetID id)

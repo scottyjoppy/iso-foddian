@@ -43,7 +43,7 @@ int main()
 
     Grid grid(sf::Vector2f(windowSize), sf::Vector2f(windowSize.x / 2, windowSize.y / 3), cellSize);
     
-    TileMap map("assets/maps/map1.txt", cellSize, {windowSize.x / 2.f - scaledCellSize.x / 2, windowSize.y / 3.f});
+    TileMap map("assets/maps/map2.txt", cellSize, {windowSize.x / 2.f - scaledCellSize.x / 2, windowSize.y / 3.f});
 
     FrameRate fr;
     SheetManager::Load();
@@ -80,6 +80,14 @@ int main()
         {
             fr.Update(deltaTime);
             p1.Update(deltaTime, gravity, friction);
+
+//            std::vector<CubeTile*> tiles = map.GetAllTiles();
+//            Collision::PlayerVsCubeTileSAT(p1.m_bounds, tiles);
+            auto tilesUnder = Collision::TilesUnderPlayer(p1.m_bounds, map.GetAllTiles());
+            for (const CubeTile* t : tilesUnder)
+            {
+                std::cout << "Player is on tile: " << t->GetGridCoords().x << ", " << t->GetGridCoords().y << ", " << t->GetGridCoords().z << std::endl;
+            }
 
             accumulator -= fixedDt;
         }

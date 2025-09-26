@@ -18,7 +18,7 @@ CubeTile::~CubeTile()
 void CubeTile::Initialize()
 {
     m_scale = Math::CalcScale(m_tileSize);
-    sf::Vector2f pos = Math::IsoTransform(m_gridCoords.x, m_gridCoords.y, m_gridCoords.z, m_tileSize * m_scale);
+    sf::Vector2f pos = Math::IsoTransform(sf::Vector3f(m_gridCoords), m_tileSize * m_scale);
 
     sf::Vector2f mapPos = pos + m_mapOffset;
     m_sprite.setPosition(mapPos);

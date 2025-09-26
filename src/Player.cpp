@@ -5,19 +5,18 @@
 #include "Player.h"
 #include "Math.h"
 
-Player::Player() :
+Player::Player(const sf::Vector2f& mapOffset) :
     // Size
     m_tileSize(16.f, 16.f),
     m_scale(1.f),
     // Position
-    m_spritePos(500, 0, 500),
-    m_currPos(m_spritePos),
-    m_prevPos(m_spritePos),
+    m_gridPos(0.f, 0.f, 0.f),
+    m_currPos(m_gridPos),
+    m_prevPos(m_gridPos),
     m_vel(0.f, 0.f, 0.f),
     // Movement
-    m_moveStep(10.f, 10.f, 10.f),
-    m_playerSpeed(500.f),
-    m_jumpInitVel(500.f),
+    m_playerSpeed(5.f),
+    m_jumpInitVel(5.f),
     // Timers
     moveRate(0.2f),
     textureTimer(0.f),
@@ -25,7 +24,8 @@ Player::Player() :
     posTimer(0.f),
     posRate(0.5f),
     // Bools
-    isJumping(true)
+    isJumping(true),
+    m_mapOffset(mapOffset)
 {
     Initialize();
     Load();
@@ -39,15 +39,17 @@ void Player::Initialize()
 {
     std::cout << "Initializing Player" << std::endl;
     m_scale = Math::CalcScale(m_tileSize);
+    m_mapPos = Math::IsoTransform(m_gridPos, m_tileSize * m_scale) + m_mapOffset;
     m_tileSize *= m_scale;
+
 
     m_shadow.setRadius(m_tileSize.x / 4);
     m_shadow.setFillColor(sf::Color(0, 0, 0, 128));
     m_shadow.setOrigin(-m_tileSize.x / 4.5f, -m_tileSize.y * 1.6f);
     m_shadow.setScale(1.f, 0.5f);
 
-    m_shadow.setPosition(m_spritePos.x, m_spritePos.z);
-    m_sprite.setPosition(m_spritePos.x, -m_spritePos.y + m_spritePos.z);
+    m_shadow.setPosition(m_mapPos.x, m_mapPos.y);
+    m_sprite.setPosition(m_mapPos.x, m_mapPos.y);
 
     m_bounds.setOutlineColor(sf::Color::Black);
     m_bounds.setOutlineThickness(1);
@@ -93,59 +95,74 @@ void Player::Update(float deltaTime, float acc, float friction)
             )
         SetActiveSheet(SheetID::PlayerWalk);
 
-    // Handle movement X Z
     sf::Vector3f inputMove(0.f, 0.f, 0.f);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) inputMove.x -= m_moveStep.x;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) inputMove.x += m_moveStep.x;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) inputMove.z -= m_moveStep.z;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) inputMove.z += m_moveStep.z;
 
-    // Normalize diagonal movement
-    sf::Vector2f xz(inputMove.x, inputMove.z);
-    if (xz.x != 0.f || xz.y != 0.f)
+    bool up    = sf::Keyboard::isKeyPressed(sf::Keyboard::W);
+    bool down  = sf::Keyboard::isKeyPressed(sf::Keyboard::S);
+    bool left  = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
+    bool right = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
+
+    // Count how many directions are pressed
+    int pressedCount = up + down + left + right;
+
+    if (pressedCount == 1)
     {
-        float len = std::sqrt(xz.x*xz.x + xz.y*xz.y);
-
-        xz /= len;
-
-        inputMove.x = xz.x;
-        inputMove.z = xz.y * 0.5f;
+        // --- SINGLE KEY: move in screen-space directions ---
+        if (right) { inputMove.x += 1; inputMove.z += -1; } // screen right
+        if (left)  { inputMove.x += -1; inputMove.z += 1; } // screen left
+        if (up)    { inputMove.x += -1; inputMove.z += -1; }  // screen up
+        if (down)  { inputMove.x += 1; inputMove.z += 1; }// screen down
+    }
+    else if (pressedCount == 2)
+    {
+        // --- TWO KEYS: move along grid axes ---
+        if (up && right)   { inputMove.z += -1; inputMove.x += 0.33f; }   // +X grid
+        if (up && left)    { inputMove.x += -1; inputMove.z += 0.33f; }   // +Z grid
+        if (down && left)  { inputMove.z += 1; inputMove.x += -0.33f; }  // -X grid
+        if (down && right) { inputMove.x += 1; inputMove.z += -0.33f; }  // -Z grid
     }
 
-    m_spritePos.x += inputMove.x * m_playerSpeed * deltaTime;
-    m_spritePos.z += inputMove.z * m_playerSpeed * deltaTime;
+    // Normalize (so diagonals aren’t faster)
+    if (inputMove.x != 0.f || inputMove.z != 0.f)
+    {
+        float len = std::sqrt(inputMove.x * inputMove.x + inputMove.z * inputMove.z);
+        inputMove.x /= len;
+        inputMove.z /= len;
+    }
+
+    // Apply movement
+    m_gridPos.x += inputMove.x * m_playerSpeed * deltaTime;
+    m_gridPos.z += inputMove.z * m_playerSpeed * deltaTime;
 
     // Movement Y
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !isJumping) 
     {
         isJumping = true;
-        m_prevPos.y = m_spritePos.y;
-        m_spritePos.y += m_jumpInitVel * deltaTime;
+        m_vel.y = m_jumpInitVel;
     }
 
     if (isJumping)
-    {
-        float yNew = 2.f * m_spritePos.y - m_prevPos.y + acc * deltaTime * deltaTime;
-        m_prevPos.y = m_spritePos.y;
-        m_spritePos.y = yNew;
+   {
+        m_vel.y += acc * deltaTime;
+        m_gridPos.y += m_vel.y * deltaTime;
+
+        if (m_gridPos.y <= 0.f)
+        {
+            m_gridPos.y = 0.f;
+            m_vel.y = 0.f;
+            isJumping = false;
+        }
     }
 
-    if (m_spritePos.y <= 0.f)
-    {
-        m_spritePos.y = 0.f;
-        isJumping = false;
-    }
+    sf::Vector2f groundPos = Math::IsoToScreen(sf::Vector3f(m_gridPos.x, 0.f, m_gridPos.z), m_tileSize) + m_mapOffset - sf::Vector2f(m_tileSize.x / 2, m_tileSize.y);
+
+    m_mapPos = Math::IsoToScreen(m_gridPos, m_tileSize) + m_mapOffset - sf::Vector2f(m_tileSize.x / 2, m_tileSize.y);
     
-    m_shadow.setPosition(m_spritePos.x, m_spritePos.z);
-    m_sprite.setPosition(m_spritePos.x, -m_spritePos.y + m_spritePos.z);
+    m_shadow.setPosition(m_mapPos.x, groundPos.y);
+    m_sprite.setPosition(m_mapPos.x, m_mapPos.y);
     m_bounds.setPosition(m_sprite.getPosition().x + m_bounds.getSize().x / 3.4f, m_sprite.getPosition().y + 10.f);
 
-//    posTimer += deltaTime; 
-//    if (posTimer > posRate)
-//    {
-//        std::cout << "X::" << m_spritePos.x << " " << "Y::" << m_spritePos.y << " " << "Z::" << m_spritePos.x << std::endl;
-//        posTimer = 0;
-//    }
+    //std::cout << m_gridPos.x << " " << m_gridPos.y << " " << m_gridPos.z << std::endl;
 }
 
 void Player::Draw(sf::RenderWindow& window)

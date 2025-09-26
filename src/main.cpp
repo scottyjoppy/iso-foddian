@@ -18,10 +18,11 @@ sf::Vector2u windowSize(1920, 1080);
 int main()
 {
     // MAGIC
-    float gravity = -9.8f * 100.f;
+    float gravity = -9.8f;
     float bounce = 0.9f;
     float friction = 0.999f;
     float fps = 60.f;
+    sf::Vector2f mapOffset(windowSize.x / 2, windowSize.y / 3);
 
     sf::Vector2f cellSize = {32, 16};
     sf::Vector2f scaledCellSize = cellSize * Math::CalcScale(cellSize);
@@ -41,14 +42,14 @@ int main()
     Collision::m_b = bounce;
     Collision::m_f = friction;
 
-    Grid grid(sf::Vector2f(windowSize), sf::Vector2f(windowSize.x / 2, windowSize.y / 3), cellSize);
+    Grid grid(sf::Vector2f(windowSize), mapOffset, cellSize);
     
     TileMap map("assets/maps/map2.txt", cellSize, {windowSize.x / 2.f - scaledCellSize.x / 2, windowSize.y / 3.f});
 
     FrameRate fr;
     SheetManager::Load();
 
-    Player p1;
+    Player p1(mapOffset);
 
 	//-----GAME LOOP-----
 	
@@ -69,8 +70,8 @@ int main()
 				window.close();
             else if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::R))
             {
-                p1.m_spritePos = sf::Vector3f(windowSize.x / 2, 500, windowSize.y / 2);
-                p1.m_prevPos = p1.m_spritePos;
+                p1.m_gridPos = sf::Vector3f(5.f, 5.f, 5.f);
+                p1.m_prevPos = p1.m_gridPos;
                 p1.isJumping = true;
             }
 
@@ -82,18 +83,20 @@ int main()
             p1.Update(deltaTime, gravity, friction);
             
             std::vector<CubeTile*> allTiles = map.GetAllTiles();
+            std::cout << "Colliding tiles are:::" << std::endl;
             for (auto& t : allTiles)
             {
-                float dist = Math::GetDist(p1.m_spritePos, sf::Vector3f
+                float dist = Math::GetDist(p1.m_gridPos, sf::Vector3f
                         (
                          static_cast<float>(t->m_gridCoords.x),
                          static_cast<float>(t->m_gridCoords.y),
                          static_cast<float>(t->m_gridCoords.z)
                         ));
-                if (dist <= 3 * cellSize.x);
+                if (dist <= 3)
                     std::cout << "Tile: " << t->m_gridCoords.x << " " << t->m_gridCoords.y << " " << t->m_gridCoords.z << std::endl;
-                    std::cout << "Player: " << p1.m_spritePos.x << " " << p1.m_spritePos.y << std::endl;
             }
+
+            //^^ is wrong, not correctly detecting y level and I believe confusing it for z tile
 
             accumulator -= fixedDt;
         }

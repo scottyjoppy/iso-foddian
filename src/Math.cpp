@@ -43,12 +43,20 @@ float Math::CalcScale(sf::Vector2f tileSize)
 	return scale;
 }
 
-sf::Vector2f Math::IsoTransform(int x, int y, int z, sf::Vector2f tileSize)
+sf::Vector2f Math::IsoTransform(sf::Vector3f gridCoords, sf::Vector2f tileSize)
 {
-    float isoX = (x - y) * (tileSize.x / 2.f);
-    float isoY = (x + y) * (tileSize.y / 2.f) - z * tileSize.y;
+    float isoX = (gridCoords.x - gridCoords.y) * (tileSize.x / 2.f);
+    float isoY = (gridCoords.x + gridCoords.y) * (tileSize.y / 2.f) - gridCoords.z * tileSize.y;
 
     return {isoX, isoY};
+}
+
+sf::Vector2f Math::IsoToScreen(const sf::Vector3f& gridCoords, sf::Vector2f tileSize)
+{
+    float x = (gridCoords.x - gridCoords.z) * (tileSize.x / 2.f);
+    float y = (gridCoords.x + gridCoords.z) * (tileSize.x / 2.f) - gridCoords.y * tileSize.y;
+
+    return {x, y};
 }
 
 float Math::GetDist(sf::Vector3f obj1, sf::Vector3f obj2)

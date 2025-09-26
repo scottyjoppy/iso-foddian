@@ -21,7 +21,7 @@ Tile::~Tile()
 void Tile::Initialize()
 {
     m_scale = Math::CalcScale(m_tileSize);
-    sf::Vector2f pos = Math::IsoTransform(m_gridCoords.x, m_gridCoords.y, m_gridCoords.z, m_tileSize * m_scale);
+    sf::Vector2f pos = Math::IsoTransform(sf::Vector3f(m_gridCoords), m_tileSize * m_scale);
     
     m_sprite.setPosition(pos + m_mapOffset);
     m_sprite.setScale(m_scale * 2.f, m_scale * 2.f);

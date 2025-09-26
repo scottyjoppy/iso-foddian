@@ -53,15 +53,6 @@ bool MapLoader::Load(const std::string& filename, MapData& mapData)
                     mapData.tileIds.push_back(std::stoi(token));
                 }
             }
-
-            if (mapData.tileIds.size() != mapData.mapW * mapData.mapH)
-            {
-                std::cerr << "ERROR: Map data length (" 
-                          << mapData.tileIds.size() 
-                          << ") does not match mapWidth*mapHeight (" 
-                          << mapData.mapW * mapData.mapH << ")!" 
-                          << std::endl;
-            }
         }
         catch (const std::exception& e)
         {

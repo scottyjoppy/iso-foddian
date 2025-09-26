@@ -15,12 +15,12 @@ class Player
         sf::Vector2f m_tileSize;
         float m_scale;
 
-        sf::Vector3f m_spritePos;
+        sf::Vector3f m_gridPos;
+        sf::Vector2f m_mapPos;
         sf::Vector3f m_currPos;
         sf::Vector3f m_prevPos;
         sf::Vector3f m_vel;
 
-        sf::Vector3f m_moveStep;
         float m_playerSpeed;
         float m_jumpInitVel;
 
@@ -32,10 +32,12 @@ class Player
 
         bool isJumping;
 
+        sf::Vector2f m_mapOffset;
+
         sf::CircleShape m_shadow;
 
 	public:
-		Player();
+		Player(const sf::Vector2f& mapOffset);
 		~Player();
 
 		void Initialize();

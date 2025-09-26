@@ -22,6 +22,8 @@ Player::Player() :
     moveRate(0.2f),
     textureTimer(0.f),
     sheetIdx(0),
+    posTimer(0.f),
+    posRate(0.5f),
     // Bools
     isJumping(true)
 {
@@ -137,6 +139,13 @@ void Player::Update(float deltaTime, float acc, float friction)
     m_shadow.setPosition(m_spritePos.x, m_spritePos.z);
     m_sprite.setPosition(m_spritePos.x, -m_spritePos.y + m_spritePos.z);
     m_bounds.setPosition(m_sprite.getPosition().x + m_bounds.getSize().x / 3.4f, m_sprite.getPosition().y + 10.f);
+
+//    posTimer += deltaTime; 
+//    if (posTimer > posRate)
+//    {
+//        std::cout << "X::" << m_spritePos.x << " " << "Y::" << m_spritePos.y << " " << "Z::" << m_spritePos.x << std::endl;
+//        posTimer = 0;
+//    }
 }
 
 void Player::Draw(sf::RenderWindow& window)

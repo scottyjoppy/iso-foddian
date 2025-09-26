@@ -27,6 +27,8 @@ class Player
         float moveRate;
         float textureTimer;
         int sheetIdx;
+        float posTimer;
+        float posRate;
 
         bool isJumping;
 
@@ -42,6 +44,4 @@ class Player
 		void Draw(sf::RenderWindow& window);	
 
         void SetActiveSheet(SheetID id);
-
-        const sf::RectangleShape& GetBounds() const { return m_bounds; }
 };

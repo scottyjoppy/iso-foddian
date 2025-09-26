@@ -80,13 +80,19 @@ int main()
         {
             fr.Update(deltaTime);
             p1.Update(deltaTime, gravity, friction);
-
-//            std::vector<CubeTile*> tiles = map.GetAllTiles();
-//            Collision::PlayerVsCubeTileSAT(p1.m_bounds, tiles);
-            auto tilesUnder = Collision::TilesUnderPlayer(p1.m_bounds, map.GetAllTiles());
-            for (const CubeTile* t : tilesUnder)
+            
+            std::vector<CubeTile*> allTiles = map.GetAllTiles();
+            for (auto& t : allTiles)
             {
-                std::cout << "Player is on tile: " << t->GetGridCoords().x << ", " << t->GetGridCoords().y << ", " << t->GetGridCoords().z << std::endl;
+                float dist = Math::GetDist(p1.m_spritePos, sf::Vector3f
+                        (
+                         static_cast<float>(t->m_gridCoords.x),
+                         static_cast<float>(t->m_gridCoords.y),
+                         static_cast<float>(t->m_gridCoords.z)
+                        ));
+                if (dist <= 3 * cellSize.x);
+                    std::cout << "Tile: " << t->m_gridCoords.x << " " << t->m_gridCoords.y << " " << t->m_gridCoords.z << std::endl;
+                    std::cout << "Player: " << p1.m_spritePos.x << " " << p1.m_spritePos.y << std::endl;
             }
 
             accumulator -= fixedDt;

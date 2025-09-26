@@ -50,3 +50,11 @@ sf::Vector2f Math::IsoTransform(int x, int y, int z, sf::Vector2f tileSize)
 
     return {isoX, isoY};
 }
+
+float Math::GetDist(sf::Vector3f obj1, sf::Vector3f obj2)
+{
+    float dx = obj1.x - obj2.x;
+    float dy = obj1.y - obj2.y;
+    float dz = obj1.z - obj2.z;
+    return std::sqrt(dx * dx + dy * dy + dz * dz);
+}

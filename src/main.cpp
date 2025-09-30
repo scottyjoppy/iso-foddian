@@ -22,10 +22,11 @@ int main()
     float bounce = 0.9f;
     float friction = 0.999f;
     float fps = 60.f;
-    sf::Vector2f mapOffset(windowSize.x / 2, windowSize.y / 3);
 
     sf::Vector2f cellSize = {32, 16};
     sf::Vector2f scaledCellSize = cellSize * Math::CalcScale(cellSize);
+    sf::Vector2f gridOffset(windowSize.x / 2.f, windowSize.y / 3.f);
+    sf::Vector2f mapOffset(windowSize.x / 2.f - scaledCellSize.x / 2, windowSize.y / 3.f);
     float depth = 0.f;
 
 	//-----INITIALIZE WINDOW-----
@@ -42,14 +43,14 @@ int main()
     Collision::m_b = bounce;
     Collision::m_f = friction;
 
-    Grid grid(sf::Vector2f(windowSize), mapOffset, cellSize);
+    Grid grid(sf::Vector2f(windowSize), gridOffset, cellSize);
     
-    TileMap map("assets/maps/map2.txt", cellSize, {windowSize.x / 2.f - scaledCellSize.x / 2, windowSize.y / 3.f});
+    TileMap map("assets/maps/map2.txt", cellSize, mapOffset);
 
     FrameRate fr;
     SheetManager::Load();
 
-    Player p1(mapOffset);
+    Player p1(mapOffset, cellSize);
 
 	//-----GAME LOOP-----
 	
@@ -79,11 +80,10 @@ int main()
 
         while (accumulator >= fixedDt)
         {
-            fr.Update(deltaTime);
             p1.Update(deltaTime, gravity, friction);
+            fr.Update(deltaTime, p1.m_gridPos);
             
             std::vector<CubeTile*> allTiles = map.GetAllTiles();
-            std::cout << "Colliding tiles are:::" << std::endl;
             for (auto& t : allTiles)
             {
                 float dist = Math::GetDist(p1.m_gridPos, sf::Vector3f
@@ -92,11 +92,12 @@ int main()
                          static_cast<float>(t->m_gridCoords.y),
                          static_cast<float>(t->m_gridCoords.z)
                         ));
-                if (dist <= 3)
-                    std::cout << "Tile: " << t->m_gridCoords.x << " " << t->m_gridCoords.y << " " << t->m_gridCoords.z << std::endl;
+                if (dist <= 2)
+                    t->m_bounds.m_debugColorsEnabled = false;
+                else
+                    t->m_bounds.m_debugColorsEnabled = true;
+                t->Update(deltaTime);
             }
-
-            //^^ is wrong, not correctly detecting y level and I believe confusing it for z tile
 
             accumulator -= fixedDt;
         }

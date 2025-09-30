@@ -4,6 +4,9 @@
 
 class TileBounds
 {
+    public:
+        bool m_debugColorsEnabled;
+
     private:
         sf::ConvexShape m_top;
         sf::ConvexShape m_bottom;

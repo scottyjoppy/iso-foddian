@@ -28,10 +28,10 @@ void Grid::Initialize()
     }
 
     m_yLines.setPrimitiveType(sf::Lines);
-    for (int y = 0; y <= m_gridSize.y; y++)
+    for (int z = 0; z <= m_gridSize.y; z++)
     {
-        sf::Vector2f start = m_pos + sf::Vector2f(-y * m_cellSize.x / 2, y * m_cellSize.y / 2) * m_scale.x;
-        sf::Vector2f end = m_pos + sf::Vector2f((m_gridSize.x - y) * m_cellSize.x / 2, (m_gridSize.x + y) * m_cellSize.y / 2) * m_scale.x;
+        sf::Vector2f start = m_pos + sf::Vector2f(-z * m_cellSize.x / 2, z * m_cellSize.y / 2) * m_scale.x;
+        sf::Vector2f end = m_pos + sf::Vector2f((m_gridSize.x - z) * m_cellSize.x / 2, (m_gridSize.x + z) * m_cellSize.y / 2) * m_scale.x;
         m_yLines.append(sf::Vertex(start, m_color));
         m_yLines.append(sf::Vertex(end, m_color));
     }
@@ -39,9 +39,9 @@ void Grid::Initialize()
     m_vLines.setPrimitiveType(sf::Lines);
     for (int x = 1; x <= m_gridSize.x; x++)
     {
-        for (int y = 1; y < m_gridSize.y; y++)
+        for (int z = 1; z < m_gridSize.y; z++)
         {
-            sf::Vector2f pos = m_pos + sf::Vector2f((x - y) * m_cellSize.x / 2, (x + y) * m_cellSize.y / 2) * m_scale.x;
+            sf::Vector2f pos = m_pos + sf::Vector2f((x - z) * m_cellSize.x / 2, (x + z) * m_cellSize.y / 2) * m_scale.x;
             sf::Vector2f top = pos + sf::Vector2f(0.f, -m_cellSize.y) * m_scale.x;
 
             m_vLines.append(sf::Vertex(pos, sf::Color::Blue));

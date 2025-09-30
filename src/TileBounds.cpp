@@ -1,7 +1,8 @@
 #include "TileBounds.h"
 
 
-TileBounds::TileBounds()
+TileBounds::TileBounds() :
+    m_debugColorsEnabled(true)
 {
 }
 
@@ -17,7 +18,11 @@ void TileBounds::BuildTop(const sf::Vector2f& pos, const sf::Vector2f& size, flo
     m_top.setPoint(1, {pos.x + size.x / 2, pos.y + size.y / 2 - height});   // right
     m_top.setPoint(2, {pos.x, pos.y + size.y - height});                    // bottom
     m_top.setPoint(3, {pos.x - size.x / 2, pos.y + size.y / 2 - height});   // left
-    m_top.setFillColor(sf::Color(0, 255, 0, 80)); // debug translucent
+    
+    if (m_debugColorsEnabled)
+        m_top.setFillColor(sf::Color(0, 255, 0, 80));
+    else
+        m_top.setFillColor(sf::Color::Red);
 }
 
 void TileBounds::BuildBottom(const sf::Vector2f& pos, const sf::Vector2f& size)
@@ -28,7 +33,10 @@ void TileBounds::BuildBottom(const sf::Vector2f& pos, const sf::Vector2f& size)
     m_bottom.setPoint(1, {pos.x + size.x / 2, pos.y + size.y / 2});
     m_bottom.setPoint(2, {pos.x, pos.y + size.y});
     m_bottom.setPoint(3, {pos.x - size.x / 2, pos.y + size.y / 2});
-    m_bottom.setFillColor(sf::Color(255, 0, 0, 80)); // debug translucent
+    if (m_debugColorsEnabled)
+        m_bottom.setFillColor(sf::Color(255, 0, 0, 80));
+    else
+        m_bottom.setFillColor(sf::Color::Red);
 }
 
 void TileBounds::BuildWallLeft(const sf::Vector2f& pos, const sf::Vector2f& size, float height)
@@ -39,7 +47,10 @@ void TileBounds::BuildWallLeft(const sf::Vector2f& pos, const sf::Vector2f& size
     m_left.setPoint(1, {pos.x, pos.y + size.y});
     m_left.setPoint(2, {pos.x, pos.y + size.y  - height});
     m_left.setPoint(3, {pos.x - size.x / 2, pos.y + size.y / 2  - height});
-    m_left.setFillColor(sf::Color(0, 0, 255, 80));
+    if (m_debugColorsEnabled)
+        m_left.setFillColor(sf::Color(0, 0, 255, 80));
+    else
+        m_left.setFillColor(sf::Color::Red);
 }
 
 void TileBounds::BuildWallRight(const sf::Vector2f& pos, const sf::Vector2f& size, float height)
@@ -50,7 +61,10 @@ void TileBounds::BuildWallRight(const sf::Vector2f& pos, const sf::Vector2f& siz
     m_right.setPoint(1, {pos.x + size.x / 2, pos.y + size.y / 2});
     m_right.setPoint(2, {pos.x + size.x / 2, pos.y + size.y / 2  - height});
     m_right.setPoint(3, {pos.x, pos.y + size.y  - height});
-    m_right.setFillColor(sf::Color(255, 255, 0, 80));
+    if (m_debugColorsEnabled)
+        m_right.setFillColor(sf::Color(255, 255, 0, 80));
+    else
+        m_right.setFillColor(sf::Color::Red);
 }
 
 void TileBounds::BuildWallBackL(const sf::Vector2f& pos, const sf::Vector2f& size, float height)
@@ -61,7 +75,10 @@ void TileBounds::BuildWallBackL(const sf::Vector2f& pos, const sf::Vector2f& siz
     m_backL.setPoint(1, {pos.x - size.x / 2, pos.y + size.y / 2});
     m_backL.setPoint(2, {pos.x - size.x / 2, pos.y + size.y / 2  - height});
     m_backL.setPoint(3, {pos.x, pos.y  - height});
-    m_backL.setFillColor(sf::Color(0, 255, 255, 80));
+    if (m_debugColorsEnabled)
+        m_backL.setFillColor(sf::Color(0, 255, 255, 80));
+    else
+        m_backL.setFillColor(sf::Color::Red);
 }
 
 void TileBounds::BuildWallBackR(const sf::Vector2f& pos, const sf::Vector2f& size, float height)
@@ -72,5 +89,8 @@ void TileBounds::BuildWallBackR(const sf::Vector2f& pos, const sf::Vector2f& siz
     m_backR.setPoint(1, {pos.x + size.x / 2, pos.y + size.y / 2});
     m_backR.setPoint(2, {pos.x + size.x / 2, pos.y + size.y / 2  - height});
     m_backR.setPoint(3, {pos.x, pos.y  - height});
-    m_backR.setFillColor(sf::Color(255, 0, 255, 80));
+    if (m_debugColorsEnabled)
+        m_backR.setFillColor(sf::Color(255, 0, 255, 80));
+    else
+        m_backR.setFillColor(sf::Color::Red);
 }

@@ -13,7 +13,11 @@ class Player
         sf::Sprite m_sprite;
 
         sf::Vector2f m_tileSize;
-        float m_scale;
+        sf::Vector2f m_playerSize;
+        sf::Vector2f m_scaledTileSize;
+        sf::Vector2f m_scaledPlayerSize;
+        float m_tileScale;
+        float m_playerScale;
 
         sf::Vector3f m_gridPos;
         sf::Vector2f m_mapPos;
@@ -37,7 +41,7 @@ class Player
         sf::CircleShape m_shadow;
 
 	public:
-		Player(const sf::Vector2f& mapOffset);
+		Player(const sf::Vector2f& mapOffset, const sf::Vector2f& cellSize);
 		~Player();
 
 		void Initialize();

@@ -5,12 +5,15 @@
 #include "Player.h"
 #include "Math.h"
 
-Player::Player(const sf::Vector2f& mapOffset) :
+Player::Player(const sf::Vector2f& mapOffset, const sf::Vector2f& cellSize) :
     // Size
-    m_tileSize(16.f, 16.f),
-    m_scale(1.f),
+    m_tileSize(cellSize),
+    m_scaledTileSize(m_tileSize),
+    m_scaledPlayerSize(m_playerSize),
+    m_tileScale(1.f),
+    m_playerScale(1.f),
     // Position
-    m_gridPos(0.f, 0.f, 0.f),
+    m_gridPos(0.f, 1.f, 0.f),
     m_currPos(m_gridPos),
     m_prevPos(m_gridPos),
     m_vel(0.f, 0.f, 0.f),
@@ -38,14 +41,13 @@ Player::~Player()
 void Player::Initialize()
 {
     std::cout << "Initializing Player" << std::endl;
-    m_scale = Math::CalcScale(m_tileSize);
-    m_mapPos = Math::IsoTransform(m_gridPos, m_tileSize * m_scale) + m_mapOffset;
-    m_tileSize *= m_scale;
+    m_tileScale = Math::CalcScale(m_tileSize);
+    m_scaledTileSize = m_tileSize * m_tileScale;
+    m_mapPos = Math::IsoTransform(m_gridPos, m_scaledTileSize) + m_mapOffset;
 
-
-    m_shadow.setRadius(m_tileSize.x / 4);
+    m_shadow.setRadius(m_scaledTileSize.x / 4);
     m_shadow.setFillColor(sf::Color(0, 0, 0, 128));
-    m_shadow.setOrigin(-m_tileSize.x / 4.5f, -m_tileSize.y * 1.6f);
+    m_shadow.setOrigin(-m_scaledTileSize.x / 4.5f, -m_scaledTileSize.y * 0.5f);
     m_shadow.setScale(1.f, 0.5f);
 
     m_shadow.setPosition(m_mapPos.x, m_mapPos.y);
@@ -54,13 +56,15 @@ void Player::Initialize()
     m_bounds.setOutlineColor(sf::Color::Black);
     m_bounds.setOutlineThickness(1);
     m_bounds.setFillColor(sf::Color(255, 255, 0, 80));
-    m_bounds.setSize(sf::Vector2f(m_tileSize.x * 0.6f, m_tileSize.y - 10.f));
 }
 
 void Player::Load()
 {
     std::cout << "Loading sheet into Player" << std::endl;
     SetActiveSheet(SheetID::PlayerIdle);
+
+    sf::Vector2f boundsSize(m_scaledPlayerSize.x * 0.6f, -m_scaledPlayerSize.y * 0.9f);
+    m_bounds.setSize(boundsSize);
 }
 
 void Player::Update(float deltaTime, float acc, float friction)
@@ -105,21 +109,23 @@ void Player::Update(float deltaTime, float acc, float friction)
     // Count how many directions are pressed
     int pressedCount = up + down + left + right;
 
+    float step = 1;
+
     if (pressedCount == 1)
     {
         // --- SINGLE KEY: move in screen-space directions ---
-        if (right) { inputMove.x += 1; inputMove.z += -1; } // screen right
-        if (left)  { inputMove.x += -1; inputMove.z += 1; } // screen left
-        if (up)    { inputMove.x += -1; inputMove.z += -1; }  // screen up
-        if (down)  { inputMove.x += 1; inputMove.z += 1; }// screen down
+        if (right) { inputMove.x += step; inputMove.z += -step; } // screen right
+        if (left)  { inputMove.x += -step; inputMove.z += step; } // screen left
+        if (up)    { inputMove.x += -step; inputMove.z += -step; }  // screen up
+        if (down)  { inputMove.x += step; inputMove.z += step; }// screen down
     }
     else if (pressedCount == 2)
     {
         // --- TWO KEYS: move along grid axes ---
-        if (up && right)   { inputMove.z += -1; inputMove.x += 0.33f; }   // +X grid
-        if (up && left)    { inputMove.x += -1; inputMove.z += 0.33f; }   // +Z grid
-        if (down && left)  { inputMove.z += 1; inputMove.x += -0.33f; }  // -X grid
-        if (down && right) { inputMove.x += 1; inputMove.z += -0.33f; }  // -Z grid
+        if (up && right)   { inputMove.z += -step * 0.33f; }   // +X grid
+        if (up && left)    { inputMove.x += -step * 0.33f; }   // +Z grid
+        if (down && left)  { inputMove.z += step * 0.33f; }  // -X grid
+        if (down && right) { inputMove.x += step * 0.33f; }  // -Z grid
     }
 
     // Normalize (so diagonals aren’t faster)
@@ -146,23 +152,21 @@ void Player::Update(float deltaTime, float acc, float friction)
         m_vel.y += acc * deltaTime;
         m_gridPos.y += m_vel.y * deltaTime;
 
-        if (m_gridPos.y <= 0.f)
+        if (m_gridPos.y <= 1.f)
         {
-            m_gridPos.y = 0.f;
+            m_gridPos.y = 1.f;
             m_vel.y = 0.f;
             isJumping = false;
         }
     }
 
-    sf::Vector2f groundPos = Math::IsoToScreen(sf::Vector3f(m_gridPos.x, 0.f, m_gridPos.z), m_tileSize) + m_mapOffset - sf::Vector2f(m_tileSize.x / 2, m_tileSize.y);
+    sf::Vector2f groundPos = Math::IsoTransform(sf::Vector3f(m_gridPos.x, 1.f, m_gridPos.z), m_scaledTileSize) + m_mapOffset;
 
-    m_mapPos = Math::IsoToScreen(m_gridPos, m_tileSize) + m_mapOffset - sf::Vector2f(m_tileSize.x / 2, m_tileSize.y);
+    m_mapPos = Math::IsoTransform(m_gridPos, m_scaledTileSize) + m_mapOffset;
     
     m_shadow.setPosition(m_mapPos.x, groundPos.y);
     m_sprite.setPosition(m_mapPos.x, m_mapPos.y);
-    m_bounds.setPosition(m_sprite.getPosition().x + m_bounds.getSize().x / 3.4f, m_sprite.getPosition().y + 10.f);
-
-    //std::cout << m_gridPos.x << " " << m_gridPos.y << " " << m_gridPos.z << std::endl;
+    m_bounds.setPosition(m_sprite.getPosition().x + m_scaledPlayerSize.x * 0.18f, m_sprite.getPosition().y + m_playerSize.y * 1.1f);
 }
 
 void Player::Draw(sf::RenderWindow& window)
@@ -181,5 +185,9 @@ void Player::SetActiveSheet(SheetID id)
     m_texture = &sheet.m_texture;
     m_sprite.setTexture(*m_texture);
     m_sprite.setTextureRect(sheet.frames[0].rect);
-    m_sprite.setScale(m_scale, m_scale);
+    m_playerSize = sheet.m_spriteSize;
+    m_playerScale = Math::CalcScale(m_playerSize);
+    m_scaledPlayerSize = m_playerSize * m_playerScale;
+    m_sprite.setScale(m_playerScale, m_playerScale);
+    m_sprite.setOrigin(sheet.m_origin);
 }

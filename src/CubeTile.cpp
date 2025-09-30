@@ -5,7 +5,7 @@
 #include <iostream>
 
 CubeTile::CubeTile(const sf::Vector2f& tileSize, sf::Vector3i gridCoords, int tileId, const sf::Vector2f& mapOffset) :
-    m_tileSize(tileSize), m_gridCoords(gridCoords), m_mapOffset(mapOffset), m_scale(1.f)
+    m_tileSize(tileSize), m_gridCoords(gridCoords), m_mapOffset(mapOffset), m_scale(1.f), m_cubeHeight(0)
 {
     SetTile(tileId);
     Initialize();
@@ -20,23 +20,27 @@ void CubeTile::Initialize()
     m_scale = Math::CalcScale(m_tileSize);
     sf::Vector2f pos = Math::IsoTransform(sf::Vector3f(m_gridCoords), m_tileSize * m_scale);
 
-    sf::Vector2f mapPos = pos + m_mapOffset;
-    m_sprite.setPosition(mapPos);
+    m_mapPos = pos + m_mapOffset;
+    m_sprite.setPosition(m_mapPos);
     m_sprite.setScale(m_scale * 2.f, m_scale * 2.f);
 
-    float cubeHeight = m_tileSize.y * m_scale;
+    m_cubeHeight = m_tileSize.y * m_scale;
 
-    mapPos += sf::Vector2f(m_tileSize.x * m_scale / 2, 0);
+    m_mapPos += sf::Vector2f(m_tileSize.x * m_scale / 2, 0);
 
-    if (cubeHeight > 0.f)
+}
+
+void CubeTile::Update(float deltaTime)
+{
+    if (m_cubeHeight > 0.f)
     {
-        m_bounds.BuildTop(mapPos, m_tileSize * m_scale, cubeHeight);
-        m_bounds.BuildWallLeft(mapPos, m_tileSize * m_scale, cubeHeight);
-        m_bounds.BuildWallRight(mapPos, m_tileSize * m_scale, cubeHeight);
-        m_bounds.BuildWallBackL(mapPos, m_tileSize * m_scale, cubeHeight);
-        m_bounds.BuildWallBackR(mapPos, m_tileSize * m_scale, cubeHeight);
+        m_bounds.BuildTop(m_mapPos, m_tileSize * m_scale, m_cubeHeight);
+        m_bounds.BuildWallLeft(m_mapPos, m_tileSize * m_scale, m_cubeHeight);
+        m_bounds.BuildWallRight(m_mapPos, m_tileSize * m_scale, m_cubeHeight);
+        m_bounds.BuildWallBackL(m_mapPos, m_tileSize * m_scale, m_cubeHeight);
+        m_bounds.BuildWallBackR(m_mapPos, m_tileSize * m_scale, m_cubeHeight);
     }
-    m_bounds.BuildBottom(mapPos, m_tileSize * m_scale);
+    m_bounds.BuildBottom(m_mapPos, m_tileSize * m_scale);
 }
 
 void CubeTile::Draw(sf::RenderWindow& window)

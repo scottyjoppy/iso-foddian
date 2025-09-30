@@ -1,5 +1,7 @@
 #include "FrameRate.h"
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 
 FrameRate::FrameRate() :
 	timer(0)
@@ -26,20 +28,24 @@ void FrameRate::Load()
 	}
 }
 
-void FrameRate::Update(double deltaTime)
+void FrameRate::Update(double deltaTime, sf::Vector3f gridPos)
 {
 	timer += deltaTime;
-
-	if (timer >= 0.1)
-	{
-		frameRateText.setString
-			(
-				"FPS: " + 
-				std::to_string((int)(1.0 / deltaTime)) + 
-				" frameTime: " + std::to_string(deltaTime * 1000.0)
-			);
-		timer = 0;
-	}
+    if (timer >= 0.1)
+    {
+        std::stringstream ss;
+        ss << std::fixed << std::setprecision(2) 
+           << gridPos.x << " " << gridPos.y << " " << gridPos.z;
+        
+        frameRateText.setString
+            (
+                "FPS: " + 
+                std::to_string((int)(1.0 / deltaTime)) + 
+                " frameTime: " + std::to_string(deltaTime * 1000.0) + "\n" +
+                "PlayerPos: " + ss.str()
+            );
+        timer = 0;
+    }
 }
 
 void FrameRate::Draw(sf::RenderWindow& window)

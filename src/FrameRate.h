@@ -15,6 +15,6 @@ class FrameRate
 
 		void Initialize();
 		void Load();
-		void Update(double deltaTime);
+		void Update(double deltaTime, sf::Vector3f gridPos);
 		void Draw(sf::RenderWindow& window);
 };

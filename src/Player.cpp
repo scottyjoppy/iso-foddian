@@ -32,6 +32,7 @@ Player::Player(const sf::Vector2f& mapOffset, const sf::Vector2f& cellSize) :
 {
     Initialize();
     Load();
+    SetBounds();
 }
 
 Player::~Player()
@@ -53,18 +54,12 @@ void Player::Initialize()
     m_shadow.setPosition(m_mapPos.x, m_mapPos.y);
     m_sprite.setPosition(m_mapPos.x, m_mapPos.y);
 
-    m_bounds.setOutlineColor(sf::Color::Black);
-    m_bounds.setOutlineThickness(1);
-    m_bounds.setFillColor(sf::Color(255, 255, 0, 80));
 }
 
 void Player::Load()
 {
     std::cout << "Loading sheet into Player" << std::endl;
     SetActiveSheet(SheetID::PlayerIdle);
-
-    sf::Vector2f boundsSize(m_scaledPlayerSize.x * 0.6f, -m_scaledPlayerSize.y * 0.9f);
-    m_bounds.setSize(boundsSize);
 }
 
 void Player::Update(float deltaTime, float acc, float friction)
@@ -160,13 +155,17 @@ void Player::Update(float deltaTime, float acc, float friction)
         }
     }
 
-    sf::Vector2f groundPos = Math::IsoTransform(sf::Vector3f(m_gridPos.x, 1.f, m_gridPos.z), m_scaledTileSize) + m_mapOffset;
 
     m_mapPos = Math::IsoTransform(m_gridPos, m_scaledTileSize) + m_mapOffset;
-    
+    sf::Vector2f groundPos = Math::IsoTransform(sf::Vector3f(m_gridPos.x, 1.f, m_gridPos.z), m_scaledTileSize) + m_mapOffset;
+
     m_shadow.setPosition(m_mapPos.x, groundPos.y);
     m_sprite.setPosition(m_mapPos.x, m_mapPos.y);
-    m_bounds.setPosition(m_sprite.getPosition().x + m_scaledPlayerSize.x * 0.18f, m_sprite.getPosition().y + m_playerSize.y * 1.1f);
+    
+    sf::FloatRect sprGb = m_sprite.getGlobalBounds();
+    float feetX = sprGb.left + sprGb.width * 0.5f;
+    float feetY = sprGb.top + sprGb.height;
+    m_bounds.setPosition(feetX, feetY);
 }
 
 void Player::Draw(sf::RenderWindow& window)
@@ -190,4 +189,15 @@ void Player::SetActiveSheet(SheetID id)
     m_scaledPlayerSize = m_playerSize * m_playerScale;
     m_sprite.setScale(m_playerScale, m_playerScale);
     m_sprite.setOrigin(sheet.m_origin);
+}
+
+void Player::SetBounds()
+{
+    m_boundsSize = { m_scaledPlayerSize.x * 0.5f, m_scaledPlayerSize.y * 0.9f };
+
+    m_bounds.setSize(m_boundsSize);
+    m_bounds.setOrigin(m_boundsSize.x * 0.5f, m_boundsSize.y);
+    m_bounds.setFillColor(sf::Color::Transparent);
+    m_bounds.setOutlineColor(sf::Color::Red);
+    m_bounds.setOutlineThickness(1.f);
 }

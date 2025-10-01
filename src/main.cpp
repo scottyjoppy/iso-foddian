@@ -84,18 +84,16 @@ int main()
             fr.Update(deltaTime, p1.m_gridPos);
             
             std::vector<CubeTile*> allTiles = map.GetAllTiles();
-            for (auto& t : allTiles)
+            std::vector<CubeTile*> nearbyTiles = Collision::BroadPhase(allTiles, p1);
+            for (auto* t : allTiles)
             {
-                float dist = Math::GetDist(p1.m_gridPos, sf::Vector3f
-                        (
-                         static_cast<float>(t->m_gridCoords.x),
-                         static_cast<float>(t->m_gridCoords.y),
-                         static_cast<float>(t->m_gridCoords.z)
-                        ));
-                if (dist <= 2)
-                    t->m_bounds.m_debugColorsEnabled = false;
-                else
-                    t->m_bounds.m_debugColorsEnabled = true;
+                t->m_bounds.m_debugColorsEnabled = true;
+                t->Update(deltaTime);
+            }
+
+            for (auto* t : nearbyTiles)
+            {
+                t->m_bounds.m_debugColorsEnabled = false;
                 t->Update(deltaTime);
             }
 

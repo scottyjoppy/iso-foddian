@@ -8,6 +8,9 @@ class Player
 {
 	public:
         sf::RectangleShape m_bounds;
+        sf::Vector2f m_boundsSize;
+        sf::Vector2f m_boundsOffset;
+
         SheetID activeSheetID;
         sf::Texture* m_texture;
         sf::Sprite m_sprite;
@@ -50,4 +53,5 @@ class Player
 		void Draw(sf::RenderWindow& window);	
 
         void SetActiveSheet(SheetID id);
+        void SetBounds();
 };

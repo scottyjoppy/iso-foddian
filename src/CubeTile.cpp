@@ -4,8 +4,8 @@
 #include "Math.h"
 #include <iostream>
 
-CubeTile::CubeTile(const sf::Vector2f& tileSize, sf::Vector3i gridCoords, int tileId, const sf::Vector2f& mapOffset) :
-    m_tileSize(tileSize), m_gridCoords(gridCoords), m_mapOffset(mapOffset), m_scale(1.f), m_cubeHeight(0)
+CubeTile::CubeTile(const sf::Vector2f& tileSize, sf::Vector3i gridCoords, int tileId, const sf::Vector2f& mapOffset, int logicalHeight) :
+    m_tileSize(tileSize), m_gridCoords(gridCoords), m_mapOffset(mapOffset), m_scale(1.f), m_cubeHeight(0), m_logicalHeight(logicalHeight)
 {
     SetTile(tileId);
     Initialize();

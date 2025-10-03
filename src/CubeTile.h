@@ -11,6 +11,7 @@ class CubeTile
         sf::Vector2f m_tileSize;
         sf::Vector2f m_mapPos;
         sf::Vector2f m_mapOffset;
+        int m_logicalHeight;
         float m_scale;
 
         float m_cubeHeight;
@@ -20,7 +21,7 @@ class CubeTile
         sf::FloatRect m_boundBox;
 
     public:
-        CubeTile(const sf::Vector2f& tileSize, sf::Vector3i gridCoords, int tileId, const sf::Vector2f& mapOffset);
+        CubeTile(const sf::Vector2f& tileSize, sf::Vector3i gridCoords, int tileId, const sf::Vector2f& mapOffset, int logicalHeight);
         ~CubeTile();
 
         void Initialize();

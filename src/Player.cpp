@@ -13,7 +13,7 @@ Player::Player(const sf::Vector2f& mapOffset, const sf::Vector2f& cellSize) :
     m_tileScale(1.f),
     m_playerScale(1.f),
     // Position
-    m_gridPos(0.f, 1.f, 0.f),
+    m_gridPos(0.f, 0.f, 0.f),
     m_currPos(m_gridPos),
     m_prevPos(m_gridPos),
     m_vel(0.f, 0.f, 0.f),

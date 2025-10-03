@@ -43,7 +43,8 @@ void TileMap::Load(const std::string& mapFile)
                      m_tileSize,
                      sf::Vector3i(x, y, z),
                      tileId,
-                     m_mapOffset
+                     m_mapOffset,
+                     m_layers
                     );
             }
         }

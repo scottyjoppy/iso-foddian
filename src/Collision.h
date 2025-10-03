@@ -6,6 +6,14 @@
 #include "Player.h"
 #include "CubeTile.h"
 
+struct Line
+{
+    sf::Vector2f p1;
+    sf::Vector2f p2;
+};
+
+using Polygon = std::vector<sf::Vector2f>;
+
 class Collision
 {
     public:
@@ -16,7 +24,6 @@ class Collision
     public:
         static bool NearTiles(const sf::Vector3f& obj1, const sf::Vector3f& obj2);
         static bool AABB(const sf::FloatRect& rect1, const sf::FloatRect& rect2);
-        static bool LineLine(const sf::Vector2f& p1, const sf::Vector2f& p2, const sf::Vector2f& p3, const sf::Vector2f& p4);
-        static bool PolyLine(const std::vector<sf::Vector2f>& vertices, const sf::Vector2f& l1, const sf::Vector2f& l2);
         static std::vector<CubeTile*> BroadPhase(std::vector<CubeTile*>& allTiles, Player& p);
+        static bool LinePolygon(const Line& line, const Polygon& poly);
 };

@@ -20,6 +20,8 @@ class CubeTile
         sf::RectangleShape m_cubeBounds;
         sf::FloatRect m_boundBox;
 
+        int m_tileId;
+
     public:
         CubeTile(const sf::Vector2f& tileSize, sf::Vector3i gridCoords, int tileId, const sf::Vector2f& mapOffset, int logicalHeight);
         ~CubeTile();

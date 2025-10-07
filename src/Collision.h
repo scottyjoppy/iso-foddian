@@ -23,7 +23,8 @@ class Collision
 
     public:
         static bool NearTiles(const sf::Vector3f& obj1, const sf::Vector3f& obj2);
-        static bool AABB(const sf::FloatRect& rect1, const sf::FloatRect& rect2);
+        static bool AABB(const sf::Vector3f& playerPos, float playerSize, const sf::Vector3i& tilePos, float tileSize);
         static std::vector<CubeTile*> BroadPhase(std::vector<CubeTile*>& allTiles, Player& p);
         static bool LinePolygon(const Line& line, const Polygon& poly);
+        static void Resolve(Player& p, const std::vector<CubeTile*>& tiles);
 };

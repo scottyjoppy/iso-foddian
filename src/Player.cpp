@@ -19,7 +19,7 @@ Player::Player(const sf::Vector2f& mapOffset, const sf::Vector2f& cellSize) :
     m_vel(0.f, 0.f, 0.f),
     // Movement
     m_playerSpeed(5.f),
-    m_jumpInitVel(5.f),
+    m_jumpInitVel(10.f),
     // Timers
     moveRate(0.2f),
     textureTimer(0.f),
@@ -27,7 +27,7 @@ Player::Player(const sf::Vector2f& mapOffset, const sf::Vector2f& cellSize) :
     posTimer(0.f),
     posRate(0.5f),
     // Bools
-    isJumping(true),
+    isJumping(false),
     m_mapOffset(mapOffset)
 {
     Initialize();
@@ -142,18 +142,9 @@ void Player::Update(float deltaTime, float acc, float friction)
         m_vel.y = m_jumpInitVel;
     }
 
-    if (isJumping)
-   {
-        m_vel.y += acc * deltaTime;
-        m_gridPos.y += m_vel.y * deltaTime;
-
-        if (m_gridPos.y <= 1.f)
-        {
-            m_gridPos.y = 1.f;
-            m_vel.y = 0.f;
-            isJumping = false;
-        }
-    }
+    m_vel.y += acc * deltaTime;
+    m_gridPos.y += m_vel.y * deltaTime;
+   
 
 
     m_mapPos = Math::IsoTransform(m_gridPos, m_scaledTileSize) + m_mapOffset;

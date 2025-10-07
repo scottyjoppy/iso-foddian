@@ -5,7 +5,7 @@
 #include <iostream>
 
 CubeTile::CubeTile(const sf::Vector2f& tileSize, sf::Vector3i gridCoords, int tileId, const sf::Vector2f& mapOffset, int logicalHeight) :
-    m_tileSize(tileSize), m_gridCoords(gridCoords), m_mapOffset(mapOffset), m_scale(1.f), m_cubeHeight(0), m_logicalHeight(logicalHeight)
+    m_tileSize(tileSize), m_gridCoords(gridCoords), m_mapOffset(mapOffset), m_scale(1.f), m_cubeHeight(0), m_logicalHeight(logicalHeight), m_tileId(tileId)
 {
     SetTile(tileId);
     Initialize();
@@ -30,16 +30,19 @@ void CubeTile::Initialize()
 
 void CubeTile::Update(float deltaTime)
 {
-    m_bounds.SetOrigin({m_tileSize.x * m_scale / 2, 0});
-    if (m_cubeHeight > 0.f)
+    if (m_tileId)
     {
-        m_bounds.BuildTop(m_mapPos, m_tileSize * m_scale, m_cubeHeight);
-        m_bounds.BuildWallLeft(m_mapPos, m_tileSize * m_scale, m_cubeHeight);
-        m_bounds.BuildWallRight(m_mapPos, m_tileSize * m_scale, m_cubeHeight);
-        m_bounds.BuildWallBackL(m_mapPos, m_tileSize * m_scale, m_cubeHeight);
-        m_bounds.BuildWallBackR(m_mapPos, m_tileSize * m_scale, m_cubeHeight);
+        m_bounds.SetOrigin({m_tileSize.x * m_scale / 2, 0});
+        if (m_cubeHeight > 0.f)
+        {
+            m_bounds.BuildTop(m_mapPos, m_tileSize * m_scale, m_cubeHeight);
+            m_bounds.BuildWallLeft(m_mapPos, m_tileSize * m_scale, m_cubeHeight);
+            m_bounds.BuildWallRight(m_mapPos, m_tileSize * m_scale, m_cubeHeight);
+            m_bounds.BuildWallBackL(m_mapPos, m_tileSize * m_scale, m_cubeHeight);
+            m_bounds.BuildWallBackR(m_mapPos, m_tileSize * m_scale, m_cubeHeight);
+        }
+        m_bounds.BuildBottom(m_mapPos, m_tileSize * m_scale);
     }
-    m_bounds.BuildBottom(m_mapPos, m_tileSize * m_scale);
 }
 
 void CubeTile::Draw(sf::RenderWindow& window)

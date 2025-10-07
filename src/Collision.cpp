@@ -1,10 +1,15 @@
 #include <iostream>
 #include <optional>
 #include <cmath>
+#include <limits>
 
 #include "Math.h"
 #include "TileBounds.h"
 #include "Collision.h"
+
+#define DISTANCE 1.5
+
+// ----- Math Helpers -----
 
 static float cross(const sf::Vector2f& a, const sf::Vector2f& b)
 {
@@ -13,8 +18,10 @@ static float cross(const sf::Vector2f& a, const sf::Vector2f& b)
 
 static float dot(const sf::Vector2f& a, const sf::Vector2f& b)
 {
-    return a.x * b.x - a.y * b.y;
+    return a.x * b.x + a.y * b.y;
 }
+
+// ----- Helper Functions -----
 
 Line createFeetLine(sf::FloatRect box)
 {
@@ -59,8 +66,8 @@ std::optional<sf::Vector2f> segmentIntersection(const Line& l1, const Line& l2, 
 
             if (t0 > t1) std::swap(t0, t1);
 
-            float tmin = std::min(0.0f, t0);
-            float tmax = std::max(1.0f, t0);
+            float tmin = std::max(0.0f, t0);
+            float tmax = std::min(1.0f, t1);
 
             if (tmin <= tmax + eps)
             {
@@ -83,6 +90,7 @@ std::optional<sf::Vector2f> segmentIntersection(const Line& l1, const Line& l2, 
     return std::nullopt;
 }
 
+
 bool pointInPolygon(const sf::Vector2f& point, const Polygon& poly)
 {
     size_t n = poly.size();
@@ -98,8 +106,12 @@ bool pointInPolygon(const sf::Vector2f& point, const Polygon& poly)
     return true;
 }
 
+// ----- Collision Detection -----
+
 bool Collision::LinePolygon(const Line& line, const Polygon& poly)
 {
+    if (poly.empty()) return false;
+
     size_t n = poly.size();
     for (size_t i = 0; i < n; i++)
     {
@@ -116,50 +128,63 @@ bool Collision::LinePolygon(const Line& line, const Polygon& poly)
 
 bool Collision::NearTiles(const sf::Vector3f& obj1, const sf::Vector3f& obj2)
 {
-   float dist = Math::GetDist(obj1, obj2);
-   return dist <= 3;
+    return std::abs(obj1.x - obj2.x) <= DISTANCE && std::abs(obj1.z - obj2.z) <= DISTANCE;
 }
 
-bool Collision::AABB(const sf::FloatRect& rect1, const sf::FloatRect& rect2)
+bool Collision::AABB(const sf::Vector3f& playerPos, float playerSize, const sf::Vector3i& tilePos, float tileSize = 1.0f)
 {
-	if (
-			rect1.left + rect1.width > rect2.left &&
-			rect2.left + rect2.width > rect1.left &&
-			rect2.top + rect2.height > rect1.top &&
-			rect1.top + rect1.height > rect2.top
-	   )
-		return true;
-	return false;
+    float halfSize = playerSize / 2.0f;
+
+    return (playerPos.x + halfSize > tilePos.x &&
+            playerPos.x - halfSize < tilePos.x + tileSize &&
+            playerPos.z + halfSize > tilePos.z &&
+            playerPos.z - halfSize < tilePos.z + tileSize);
 }
 
+// ----- Resolve -----
+
+void Collision::Resolve(Player& p, const std::vector<CubeTile*>& tiles)
+{
+    for (auto* t : tiles)
+    {
+        if (t->m_tileId)
+        {
+            float topY = t->m_gridCoords.y + t->m_logicalHeight;
+
+            if (p.m_gridPos.y < topY && p.m_vel.y < 0.f)
+            {
+                p.m_gridPos.y = topY;
+                p.m_vel.y = 0.f;
+                p.isJumping = false;
+
+                break;
+            }
+        }
+    }
+}
+
+// ----- Wrapper Function -----
 std::vector<CubeTile*> Collision::BroadPhase(std::vector<CubeTile*>& allTiles, Player& p)
 {
     std::vector<CubeTile*> collidingTiles;
 
-    sf::FloatRect playerBox = p.m_bounds.getGlobalBounds();
-
-    Line feetLine = createFeetLine(playerBox);
-
     for (auto& t : allTiles)
     {
-        // Check nearby tiles
-        if (NearTiles(p.m_gridPos, sf::Vector3f
-                    (
-                     static_cast<float>(t->m_gridCoords.x),
-                     static_cast<float>(t->m_gridCoords.y),
-                     static_cast<float>(t->m_gridCoords.z)
-                    )))
-        {
-            // AABB check
-            if (AABB(playerBox, t->m_boundBox))
-            {
-                if (p.m_gridPos.y <= t->m_gridCoords.y + t->m_logicalHeight)
-                {
-                    Polygon poly = createPolygon(t->m_bounds);
+        if (!t->m_tileId) continue;
 
-                    if (LinePolygon(feetLine, poly))
-                        collidingTiles.push_back(t);
-                }
+        sf::Vector3f tilePos(t->m_gridCoords.x, t->m_gridCoords.y, t->m_gridCoords.z);
+        
+        if (NearTiles(p.m_gridPos, tilePos))
+        {
+            float tileTop = t->m_gridCoords.y + t->m_logicalHeight;
+            float tileBottom = t->m_gridCoords.y;
+
+            if (p.m_gridPos.y >= tileBottom - 0.2f && 
+                    p.m_gridPos.y <= tileTop + 1.0f &&
+                    p.m_vel.y < 0.f)
+            {
+                if (AABB(p.m_gridPos, 0.6f, t->m_gridCoords))
+                    collidingTiles.push_back(t);
             }
         }
     }

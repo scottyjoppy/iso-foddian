@@ -28,7 +28,7 @@ void FrameRate::Load()
 	}
 }
 
-void FrameRate::Update(double deltaTime, sf::Vector3f gridPos)
+void FrameRate::Update(double deltaTime, sf::Vector3f gridPos, sf::Vector2i mousePos)
 {
 	timer += deltaTime;
     if (timer >= 0.1)
@@ -42,7 +42,8 @@ void FrameRate::Update(double deltaTime, sf::Vector3f gridPos)
                 "FPS: " + 
                 std::to_string((int)(1.0 / deltaTime)) + 
                 " frameTime: " + std::to_string(deltaTime * 1000.0) + "\n" +
-                "PlayerPos: " + ss.str()
+                "PlayerPos: " + ss.str() + "\n" +
+                "MousePos: " + std::to_string(mousePos.x) + " " + std::to_string(mousePos.y)
             );
         timer = 0;
     }

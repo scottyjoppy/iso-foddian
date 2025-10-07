@@ -26,7 +26,7 @@ void TileMap::Load(const std::string& mapFile)
 
     m_width = md.mapW;
     m_height = md.mapH;
-    m_layers = 1;
+    m_layers = 2;
 
     m_tiles.resize(m_layers);
     for (int y = 0; y < m_layers; y++)
@@ -36,7 +36,7 @@ void TileMap::Load(const std::string& mapFile)
         {
             for (int x = 0; x < m_width; x++)
             {
-                int index = z * m_width + x;
+                int index = (y * m_height + z) * m_width + x;
                 int tileId = md.tileIds[index];
                 m_tiles[y][z].emplace_back
                     (
@@ -44,7 +44,7 @@ void TileMap::Load(const std::string& mapFile)
                      sf::Vector3i(x, y, z),
                      tileId,
                      m_mapOffset,
-                     m_layers
+                     1
                     );
             }
         }

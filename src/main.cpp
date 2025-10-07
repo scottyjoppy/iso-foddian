@@ -18,7 +18,7 @@ sf::Vector2u windowSize(1920, 1080);
 int main()
 {
     // MAGIC
-    float gravity = -9.8f;
+    float gravity = -20.f;
     float bounce = 0.9f;
     float friction = 0.999f;
     float fps = 60.f;
@@ -53,6 +53,7 @@ int main()
     Player p1(mapOffset, cellSize);
 
 	//-----GAME LOOP-----
+    sf::Mouse mouse;
 	
     float fixedDt = 1.0f / fps; 
     float accumulator = 0.0f;
@@ -80,8 +81,10 @@ int main()
 
         while (accumulator >= fixedDt)
         {
+            sf::Vector2i mousePos = mouse.getPosition(window);
+
             p1.Update(deltaTime, gravity, friction);
-            fr.Update(deltaTime, p1.m_gridPos);
+            fr.Update(deltaTime, p1.m_gridPos, mousePos);
             
             std::vector<CubeTile*> allTiles = map.GetAllTiles();
             std::vector<CubeTile*> nearbyTiles = Collision::BroadPhase(allTiles, p1);
@@ -96,6 +99,8 @@ int main()
                 t->m_bounds.m_debugColorsEnabled = false;
                 t->Update(deltaTime);
             }
+
+            Collision::Resolve(p1, nearbyTiles);
 
             accumulator -= fixedDt;
         }

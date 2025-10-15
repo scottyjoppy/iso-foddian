@@ -1,7 +1,7 @@
 #include <math.h>
 #include "Math.h"
 #include <iostream>
-#define GLOBALTILESIZE 96
+#define GLOBALTILESIZE 96 
 
 float Math::Length(const sf::Vector2f& v)
 {

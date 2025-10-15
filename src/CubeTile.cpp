@@ -9,7 +9,6 @@ CubeTile::CubeTile(const sf::Vector2f& tileSize, sf::Vector3i gridCoords, int ti
 {
     SetTile(tileId);
     Initialize();
-    SetBounds();
 }
 
 CubeTile::~CubeTile()
@@ -47,8 +46,7 @@ void CubeTile::Update(float deltaTime)
 
 void CubeTile::Draw(sf::RenderWindow& window)
 {
-    //window.draw(m_sprite);
-    window.draw(m_cubeBounds);
+    window.draw(m_sprite);
 
     window.draw(m_bounds.GetTop());
     window.draw(m_bounds.GetBottom());
@@ -69,24 +67,4 @@ void CubeTile::SetTile(int tileId)
         std::cerr << "Warning: invalid tileId " << tileId << std::endl;
     m_sprite.setOrigin(sheet.m_origin);
 
-}
-
-void CubeTile::SetBounds()
-{
-    sf::Vector2f size = m_tileSize * m_scale;
-
-    sf::Vector2f originOffset = { size.x / 2.f, 0.f };
-
-    m_boundBox = sf::FloatRect
-        (
-         m_mapPos.x - size.x * 0.5f + originOffset.x,
-         m_mapPos.y - size.y + originOffset.y,
-         size.x,
-         size.y * 2.f
-        );
-    m_cubeBounds.setPosition(m_boundBox.left, m_boundBox.top);
-    m_cubeBounds.setSize({ m_boundBox.width, m_boundBox.height });
-    m_cubeBounds.setFillColor(sf::Color::Transparent);
-    m_cubeBounds.setOutlineColor(sf::Color::Green);
-    m_cubeBounds.setOutlineThickness(1.f);
 }

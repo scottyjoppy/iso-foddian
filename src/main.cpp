@@ -4,6 +4,7 @@
 #include "Tile.h"
 #include "Player.h"
 
+#include "Background.h"
 #include "TileMap.h"
 #include "SheetManager.h"
 #include "Grid.h"
@@ -18,7 +19,7 @@ sf::Vector2u windowSize(1920, 1080);
 int main()
 {
     // MAGIC
-    float gravity = -20.f;
+    float gravity = -15.f;
     float bounce = 0.9f;
     float friction = 0.999f;
     float fps = 60.f;
@@ -39,9 +40,8 @@ int main()
 	//-----INITIALIZE GAME-----
     SheetManager::Load();
 
-    Collision::m_g = gravity;
-    Collision::m_b = bounce;
-    Collision::m_f = friction;
+    Background bg;
+    bg.Load("assets/textures/background/background.png", 10, {1280, 720}, 0.15f);
 
     Grid grid(sf::Vector2f(windowSize), gridOffset, cellSize);
     
@@ -50,7 +50,7 @@ int main()
     FrameRate fr;
     SheetManager::Load();
 
-    Player p1(mapOffset, cellSize);
+    Player p1(gridOffset, cellSize);
 
 	//-----GAME LOOP-----
     sf::Mouse mouse;
@@ -58,6 +58,8 @@ int main()
     float fixedDt = 1.0f / fps; 
     float accumulator = 0.0f;
 	sf::Clock clock;
+
+    bool start = false;
 
 	while (window.isOpen())
 	{	
@@ -72,9 +74,11 @@ int main()
 				window.close();
             else if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::R))
             {
-                p1.m_gridPos = sf::Vector3f(5.f, 5.f, 5.f);
+                p1.m_gridPos = sf::Vector3f(5.f, 2.f, 5.f);
                 p1.m_prevPos = p1.m_gridPos;
+                p1.m_vel.y = 0.f;
                 p1.isJumping = true;
+                start = true;
             }
 
 		}
@@ -83,22 +87,26 @@ int main()
         {
             sf::Vector2i mousePos = mouse.getPosition(window);
 
-            p1.Update(deltaTime, gravity, friction);
+            if (start)
+                p1.Update(deltaTime, gravity, friction);
+
+            bg.Update(deltaTime);
             fr.Update(deltaTime, p1.m_gridPos, mousePos);
             
             std::vector<CubeTile*> allTiles = map.GetAllTiles();
             std::vector<CubeTile*> nearbyTiles = Collision::BroadPhase(allTiles, p1);
-            for (auto* t : allTiles)
-            {
-                t->m_bounds.m_debugColorsEnabled = true;
-                t->Update(deltaTime);
-            }
 
-            for (auto* t : nearbyTiles)
-            {
-                t->m_bounds.m_debugColorsEnabled = false;
-                t->Update(deltaTime);
-            }
+//            for (auto* t : allTiles)
+//            {
+//                t->m_bounds.m_debugColorsEnabled = true;
+//                t->Update(deltaTime);
+//            }
+//
+//            for (auto* t : nearbyTiles)
+//            {
+//                t->m_bounds.m_debugColorsEnabled = false;
+//                t->Update(deltaTime);
+//            }
 
             Collision::Resolve(p1, nearbyTiles);
 
@@ -111,11 +119,13 @@ int main()
         //-----DRAW-----
         
         window.clear(sf::Color::White);
+        bg.Draw(window);
 
-        grid.Draw(window);
+        //grid.Draw(window);
         fr.Draw(window);
         map.Draw(window);
-        p1.Draw(window);
+        if (start)
+            p1.Draw(window);
 
 		window.display();
 

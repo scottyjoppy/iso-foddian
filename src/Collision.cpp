@@ -9,118 +9,71 @@
 
 #define DISTANCE 1.5
 
-// ----- Math Helpers -----
+// ----- Helper Function -----
 
-static float cross(const sf::Vector2f& a, const sf::Vector2f& b)
+Line define2DLine(const std::pair<sf::Vector3f, sf::Vector3f>& feetLine)
 {
-    return a.x * b.y - a.y * b.x;
+    Line l;
+    l.p1 = sf::Vector2f(feetLine.first.x, feetLine.first.z);  // project first foot to XZ plane
+    l.p2 = sf::Vector2f(feetLine.second.x, feetLine.second.z); // project second foot to XZ plane
+    return l;
 }
 
-static float dot(const sf::Vector2f& a, const sf::Vector2f& b)
+sf::FloatRect getTileTopBounds(const CubeTile& tile)
 {
-    return a.x * b.x + a.y * b.y;
-}
+    float x = tile.m_gridCoords.x;
+    float z = tile.m_gridCoords.z;
 
-// ----- Helper Functions -----
-
-Line createFeetLine(sf::FloatRect box)
-{
-    sf::Vector2f leftFoot(box.left, box.top + box.height);
-    sf::Vector2f rightFoot(box.left + box.width, box.top + box.height);
-
-    return { leftFoot, rightFoot };
-}
-
-Polygon createPolygon(const TileBounds& bounds)
-{
-    return bounds.GetVertices();
-}
-
-std::optional<sf::Vector2f> segmentIntersection(const Line& l1, const Line& l2, float eps = 1e-6f)
-{
-    sf::Vector2f p = l1.p1;
-    sf::Vector2f r = { l1.p2.x - l1.p1.x, l1.p2.y - l1.p1.y}; 
-
-    sf::Vector2f q = l2.p1;
-    sf::Vector2f s = { l2.p2.x - l2.p1.x, l2.p2.y - l2.p1.y}; 
-
-    float rxs = cross(r, s);
-    sf::Vector2f q_p = { q.x - p.x, q.y - p.y };
-
-    if (std::fabs(rxs) < eps)
-    {
-        if (std::fabs(cross(q_p, r)) < eps)
-        {
-            float rlen2 = dot(r, r);
-            if (rlen2 < eps)
-            {
-                float slen2 = dot(s, s);
-                if (slen2 < eps) return std::nullopt;
-                float u = dot({p.x - q.x, p.y - q.y}, s) / slen2;
-                if (u >= -eps && u <= 1.0f + eps) return p;
-                return std::nullopt;
-            }
-
-            float t0 = dot(q_p, r) / rlen2;
-            float t1 = dot({ q.x + s.x - p.x, q.y + s.y - p.y }, r) / rlen2;
-
-            if (t0 > t1) std::swap(t0, t1);
-
-            float tmin = std::max(0.0f, t0);
-            float tmax = std::min(1.0f, t1);
-
-            if (tmin <= tmax + eps)
-            {
-                sf::Vector2f intersection = { p.x + r.x * tmin, p.y + r.y * tmin };
-                return intersection;
-            }
-            return std::nullopt;
-        }
-        return std::nullopt;
-    }
-
-    float t = cross(q_p, s) / rxs;
-    float u = cross(q_p, r) / rxs;
-
-    if (t >= -eps && t <= 1.0f + eps && u >= -eps && u <= 1.0f + eps)
-    {
-        sf::Vector2f intersection = { p.x + r.x * t, p.y + r.y * t };
-        return intersection;
-    }
-    return std::nullopt;
-}
-
-
-bool pointInPolygon(const sf::Vector2f& point, const Polygon& poly)
-{
-    size_t n = poly.size();
-    for (size_t i = 0; i < n; i++)
-    {
-        sf::Vector2f a = poly[i];
-        sf::Vector2f b = poly[(i + 1) % n];
-        sf::Vector2f edge = b - a;
-        sf::Vector2f toPoint = point - a;
-        if (cross(edge, toPoint) < 0) return false;
-    }
-
-    return true;
+    return sf::FloatRect(x, z, 1.f, 1.f);
 }
 
 // ----- Collision Detection -----
 
-bool Collision::LinePolygon(const Line& line, const Polygon& poly)
+// Check between 2 2D lines
+bool Collision::LineLine(const Line& l1, const Line& l2)
 {
-    if (poly.empty()) return false;
+    float denominator = (l2.p2.y - l2.p1.y) * (l1.p2.x - l1.p1.x) - 
+        (l2.p2.x - l2.p1.x) * (l1.p2.y - l1.p1.y);
 
-    size_t n = poly.size();
-    for (size_t i = 0; i < n; i++)
+    // Don't divide by 0 dummy
+    if (denominator == 0)
+        return false;
+
+    float uA = ((l2.p2.x - l2.p1.x) * (l1.p1.y - l2.p1.y) - 
+            (l2.p2.y - l2.p1.y) * (l1.p1.x - l2.p1.x)) / denominator;
+
+    float uB = ((l1.p2.x - l1.p1.x) * (l1.p1.y - l2.p1.y) - 
+            (l1.p2.y - l1.p1.y) * (l1.p1.x - l2.p1.x)) / denominator;
+
+    if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1)
+        return true;
+    return false;
+}
+
+bool Collision::LineRect(const Line& line, const sf::FloatRect& rect)
+{
+    Line leftEdge   = { sf::Vector2f(rect.left, rect.top), sf::Vector2f(rect.left, rect.top + rect.height) };
+    Line rightEdge  = { sf::Vector2f(rect.left + rect.width, rect.top), sf::Vector2f(rect.left + rect.width, rect.top + rect.height) };
+    Line topEdge    = { sf::Vector2f(rect.left, rect.top), sf::Vector2f(rect.left + rect.width, rect.top) };
+    Line bottomEdge = { sf::Vector2f(rect.left, rect.top + rect.height), sf::Vector2f(rect.left + rect.width, rect.top + rect.height) };
+
+    if (LineLine(line, leftEdge) ||
+        LineLine(line, rightEdge) ||
+        LineLine(line, topEdge) ||
+        LineLine(line, bottomEdge))
     {
-        Line edge{ poly[i], poly[(i + 1) % n] };
-        if (segmentIntersection(line, edge).has_value())
-            return true;
+        return true;
     }
 
-    if (pointInPolygon(line.p1, poly) || pointInPolygon(line.p2, poly))
+    bool p1Inside =
+        (line.p1.x >= rect.left && line.p1.x <= rect.left + rect.width &&
+         line.p1.y >= rect.top && line.p1.y <= rect.top + rect.height);
+
+    bool p2Inside =
+        (line.p2.x >= rect.left && line.p2.x <= rect.left + rect.width &&
+         line.p2.y >= rect.top && line.p2.y <= rect.top + rect.height);
+
+    if (p1Inside && p2Inside)
         return true;
 
     return false;
@@ -131,35 +84,38 @@ bool Collision::NearTiles(const sf::Vector3f& obj1, const sf::Vector3f& obj2)
     return std::abs(obj1.x - obj2.x) <= DISTANCE && std::abs(obj1.z - obj2.z) <= DISTANCE;
 }
 
-bool Collision::AABB(const sf::Vector3f& playerPos, float playerSize, const sf::Vector3i& tilePos, float tileSize = 1.0f)
-{
-    float halfSize = playerSize / 2.0f;
-
-    return (playerPos.x + halfSize > tilePos.x &&
-            playerPos.x - halfSize < tilePos.x + tileSize &&
-            playerPos.z + halfSize > tilePos.z &&
-            playerPos.z - halfSize < tilePos.z + tileSize);
-}
-
 // ----- Resolve -----
 
 void Collision::Resolve(Player& p, const std::vector<CubeTile*>& tiles)
 {
+    float maxTopY = -std::numeric_limits<float>::infinity();
+    bool collided = false;
+    float buffer = 0.1f; // small buffer to prevent sinking
+    float snapDist = 0.1f;
+
     for (auto* t : tiles)
     {
-        if (t->m_tileId)
+        if (!t->m_tileId) continue;
+
+        float topY = t->m_gridCoords.y + t->m_logicalHeight;
+        float distToTop = topY - p.m_gridPos.y;
+
+        // Player is falling and feet are below tile top + buffer
+        if (distToTop > -buffer && distToTop < snapDist && p.m_vel.y <= 0)
         {
-            float topY = t->m_gridCoords.y + t->m_logicalHeight;
-
-            if (p.m_gridPos.y < topY && p.m_vel.y < 0.f)
+            if (topY > maxTopY)
             {
-                p.m_gridPos.y = topY;
-                p.m_vel.y = 0.f;
-                p.isJumping = false;
-
-                break;
+                maxTopY = topY;
+                collided = true;
             }
         }
+    }
+
+    if (collided)
+    {
+        p.m_gridPos.y = maxTopY;
+        p.m_vel.y = 0.f;
+        p.isJumping = false;
     }
 }
 
@@ -176,16 +132,8 @@ std::vector<CubeTile*> Collision::BroadPhase(std::vector<CubeTile*>& allTiles, P
         
         if (NearTiles(p.m_gridPos, tilePos))
         {
-            float tileTop = t->m_gridCoords.y + t->m_logicalHeight;
-            float tileBottom = t->m_gridCoords.y;
-
-            if (p.m_gridPos.y >= tileBottom - 0.2f && 
-                    p.m_gridPos.y <= tileTop + 1.0f &&
-                    p.m_vel.y < 0.f)
-            {
-                if (AABB(p.m_gridPos, 0.6f, t->m_gridCoords))
-                    collidingTiles.push_back(t);
-            }
+            if (LineRect(define2DLine(p.GetFeetLine()), getTileTopBounds(*t)))
+                collidingTiles.push_back(t);
         }
     }
     return collidingTiles;

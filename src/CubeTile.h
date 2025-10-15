@@ -31,8 +31,6 @@ class CubeTile
         void Draw(sf::RenderWindow& window);
         void SetTile(int tileId);
 
-        void SetBounds();
-
         const TileBounds& GetBounds() const { return m_bounds; }
         const sf::Vector3i& GetGridCoords() const { return m_gridCoords; }
 };

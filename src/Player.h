@@ -31,7 +31,7 @@ class Player
         float m_playerSpeed;
         float m_jumpInitVel;
 
-        float moveRate;
+        float sheetRate;
         float textureTimer;
         int sheetIdx;
         float posTimer;
@@ -42,6 +42,10 @@ class Player
         sf::Vector2f m_mapOffset;
 
         sf::CircleShape m_shadow;
+
+        int m_sheetOffset;
+        int m_lastClicked;
+        bool m_wasMoving;
 
 	public:
 		Player(const sf::Vector2f& mapOffset, const sf::Vector2f& cellSize);
@@ -54,4 +58,7 @@ class Player
 
         void SetActiveSheet(SheetID id);
         void SetBounds();
+        std::pair<sf::Vector3f, sf::Vector3f> GetFeetLine() const;
+        void DrawFeetLine(sf::RenderWindow& window);
+        void UpdateSheet(bool isMoving, float deltaTime);
 };

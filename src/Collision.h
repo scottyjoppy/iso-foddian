@@ -6,25 +6,19 @@
 #include "Player.h"
 #include "CubeTile.h"
 
+
 struct Line
 {
     sf::Vector2f p1;
     sf::Vector2f p2;
 };
 
-using Polygon = std::vector<sf::Vector2f>;
-
 class Collision
 {
     public:
-        inline static float m_g = 0.f;
-        inline static float m_b = 0.f;
-        inline static float m_f = 0.f;
-
-    public:
+        static bool LineLine(const Line& l1, const Line& l2);
+        static bool LineRect(const Line& line, const sf::FloatRect& rect);
         static bool NearTiles(const sf::Vector3f& obj1, const sf::Vector3f& obj2);
-        static bool AABB(const sf::Vector3f& playerPos, float playerSize, const sf::Vector3i& tilePos, float tileSize);
-        static std::vector<CubeTile*> BroadPhase(std::vector<CubeTile*>& allTiles, Player& p);
-        static bool LinePolygon(const Line& line, const Polygon& poly);
         static void Resolve(Player& p, const std::vector<CubeTile*>& tiles);
+        static std::vector<CubeTile*> BroadPhase(std::vector<CubeTile*>& allTiles, Player& p);
 };

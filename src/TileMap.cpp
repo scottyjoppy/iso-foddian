@@ -26,7 +26,7 @@ void TileMap::Load(const std::string& mapFile)
 
     m_width = md.mapW;
     m_height = md.mapH;
-    m_layers = 2;
+    m_layers = 1;
 
     m_tiles.resize(m_layers);
     for (int y = 0; y < m_layers; y++)

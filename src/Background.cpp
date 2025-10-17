@@ -1,7 +1,7 @@
 #include "Background.h"
 
 Background::Background() :
-    m_currentFrame(0), m_timer(0.f), m_frameRate(0.1f)
+    m_currentFrame(0), m_timer(0.f), m_frameRate(0.1f), m_scale(4.f, 4.f)
 {
 }
 
@@ -9,12 +9,10 @@ Background::~Background()
 {
 }
 
-bool Background::Load(const std::string& filename, int frames, const sf::Vector2i& frameSize, float frameRate = 0.1f)
+bool Background::Load(const std::string& filename, int frames, const sf::Vector2i& frameSize)
 {
     if (!m_texture.loadFromFile(filename))
         return false;
-
-    m_frameRate = frameRate;
 
     for (int i = 0; i < frames; i++)
     {
@@ -36,7 +34,7 @@ void Background::Update(float deltaTime)
         m_currentFrame = (m_currentFrame + 1) % m_frames.size();
         m_sprite.setTextureRect(m_frames[m_currentFrame]);
     }
-    m_sprite.setScale(4, 4);
+    m_sprite.setScale(m_scale);
 }
 
 void Background::Draw(sf::RenderWindow& window)

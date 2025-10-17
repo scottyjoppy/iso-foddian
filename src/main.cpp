@@ -4,6 +4,7 @@
 #include "Tile.h"
 #include "Player.h"
 
+#include "Music.h"
 #include "Background.h"
 #include "TileMap.h"
 #include "SheetManager.h"
@@ -41,7 +42,10 @@ int main()
     SheetManager::Load();
 
     Background bg;
-    bg.Load("assets/textures/background/background.png", 10, {1280, 720}, 0.15f);
+    bg.Load("assets/textures/background/background.png", 10, {1280, 720});
+
+    Music music;
+    music.Load();
 
     Grid grid(sf::Vector2f(windowSize), gridOffset, cellSize);
     

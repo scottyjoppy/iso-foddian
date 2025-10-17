@@ -13,12 +13,13 @@ class Background
         int m_currentFrame;
         float m_timer;
         float m_frameRate;
+        sf::Vector2f m_scale;
 
     public:
         Background();
         ~Background();
 
-        bool Load(const std::string& filename, int frames, const sf::Vector2i& frameSize, float frameRate);
+        bool Load(const std::string& filename, int frames, const sf::Vector2i& frameSize);
         void Update(float deltaTime);
         void Draw(sf::RenderWindow& window);
 };

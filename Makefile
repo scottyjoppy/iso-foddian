@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -std=c++17
 INCLUDES = -IC:\SFML\include
 LIBDIRS = -LC:\SFML\lib
-LIBS = -lsfml-graphics -lsfml-window -lsfml-system
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 TARGET = main.exe
 SOURCES = $(wildcard src/*.cpp)

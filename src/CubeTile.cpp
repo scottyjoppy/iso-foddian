@@ -46,7 +46,8 @@ void CubeTile::Update(float deltaTime)
 
 void CubeTile::Draw(sf::RenderWindow& window)
 {
-    window.draw(m_sprite);
+    if (m_tileId)
+        window.draw(m_sprite);
 
     window.draw(m_bounds.GetTop());
     window.draw(m_bounds.GetBottom());

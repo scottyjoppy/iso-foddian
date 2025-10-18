@@ -1,9 +1,11 @@
 #include <iostream>
+#include <stdlib.h>
 #include <SFML/Graphics.hpp>
 
 #include "Tile.h"
 #include "Player.h"
 
+#include "DrawIso.h"
 #include "Music.h"
 #include "Background.h"
 #include "TileMap.h"
@@ -60,7 +62,10 @@ int main()
     sf::Mouse mouse;
 	
     float fixedDt = 1.0f / fps; 
-    float accumulator = 0.0f;
+    float accumulator = 0.f;
+
+    float loopRate = 0.8f; 
+    float loopAcc = 0.f;
 	sf::Clock clock;
 
     bool start = false;
@@ -69,6 +74,8 @@ int main()
 	{	
 		double deltaTime = clock.restart().asSeconds();
         accumulator += deltaTime;
+
+        loopAcc += deltaTime;
 
 		//-----UPDATE-----
 		sf::Event event;
@@ -86,6 +93,32 @@ int main()
             }
 
 		}
+        if (loopAcc >= loopRate)
+        {
+            bool empty = true;
+
+            std::vector<CubeTile*> allTiles = map.GetAllTiles();
+            int n = allTiles.size();
+            int rand = std::rand() % n;
+            
+            for (int i = 0; i < n; i++)
+            {
+                if (allTiles[i]->m_tileId)
+                {
+                    empty = false;
+                    break;
+                }
+            }
+
+            if (!empty)
+            {
+                while (!allTiles[rand]->m_tileId) rand = std::rand() % n;
+                allTiles[rand]->m_tileId = 0;
+                std::cout << "works: " << rand << std::endl;
+            }
+
+            loopAcc = 0.f;
+        }
 
         while (accumulator >= fixedDt)
         {
@@ -116,7 +149,6 @@ int main()
 
             accumulator -= fixedDt;
         }
-
         
         //-----UPDATE-----
 
@@ -124,12 +156,16 @@ int main()
         
         window.clear(sf::Color::White);
         bg.Draw(window);
+        fr.Draw(window);
 
         //grid.Draw(window);
-        fr.Draw(window);
-        map.Draw(window);
+
+        std::vector<CubeTile*> allTiles = map.GetAllTiles();
+
         if (start)
-            p1.Draw(window);
+            DrawIso::DrawAll(allTiles, p1, window);
+        else
+            map.Draw(window);
 
 		window.display();
 

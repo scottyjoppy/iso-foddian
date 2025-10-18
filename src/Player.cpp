@@ -144,7 +144,7 @@ void Player::Draw(sf::RenderWindow& window)
     //window.draw(m_shadow);
     window.draw(m_sprite);
     //window.draw(m_bounds);
-    DrawFeetLine(window);
+    //DrawFeetLine(window);
 }
 
 void Player::SetActiveSheet(SheetID id)

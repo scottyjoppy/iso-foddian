@@ -1,6 +1,7 @@
 #include "TileMap.h"
-#include <iostream>
 #include "Math.h"
+
+#include <iostream>
 
 TileMap::TileMap(const std::string& mapFile, sf::Vector2f tileSize, sf::Vector2f mapOffset) :
     m_tileSize(tileSize), m_mapOffset(mapOffset)

@@ -5,7 +5,7 @@
 #include <iostream>
 
 CubeTile::CubeTile(const sf::Vector2f& tileSize, sf::Vector3i gridCoords, int tileId, const sf::Vector2f& mapOffset, int logicalHeight) :
-    m_tileSize(tileSize), m_gridCoords(gridCoords), m_mapOffset(mapOffset), m_scale(1.f), m_cubeHeight(0), m_logicalHeight(logicalHeight), m_tileId(tileId), debugging(false)
+    m_tileSize(tileSize), m_gridCoords(gridCoords), m_mapOffset(mapOffset), m_scale(1.f), m_cubeHeight(0), m_logicalHeight(logicalHeight), m_tileId(tileId), debugging(false), m_decay(false), decayTimer(0), decayRate(1.f)
 {
     SetTile(tileId);
     Initialize();
@@ -43,6 +43,14 @@ void CubeTile::Update(float deltaTime)
         m_bounds.BuildBottom(m_mapPos, m_tileSize * m_scale);
     }
 
+    decayTimer += deltaTime;
+
+    if (m_decay && decayTimer >= decayRate)
+    {
+        Decay();
+        decayTimer = 0;
+    }
+
     if (m_tileId)
     {
         SetTile(m_tileId);
@@ -76,4 +84,19 @@ void CubeTile::SetTile(int tileId)
         std::cerr << "Warning: invalid tileId " << tileId << std::endl;
     m_sprite.setOrigin(sheet.m_origin);
 
+}
+
+void CubeTile::Decay()
+{
+    if (m_tileId == 4)
+    {
+        m_tileId = 0;
+        m_decay = false;
+    }
+    else if (m_tileId == 3)
+        m_tileId = 4;
+    else if (m_tileId == 2)
+        m_tileId = 3;
+    else if (m_tileId == 1)
+        m_tileId = 2;
 }

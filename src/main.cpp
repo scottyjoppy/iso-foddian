@@ -64,7 +64,7 @@ int main()
     float fixedDt = 1.0f / fps; 
     float accumulator = 0.f;
 
-    float loopRate = 0.8f; 
+    float loopRate = 0.1f; 
     float loopAcc = 0.f;
 	sf::Clock clock;
 
@@ -105,7 +105,7 @@ int main()
             
             for (int i = 0; i < n; i++)
             {
-                if (allTiles[i]->m_tileId)
+                if (allTiles[i]->m_tileId && allTiles[i]->m_tileId != 2 && allTiles[i]->m_tileId != 3 && allTiles[i]->m_tileId != 4)
                 {
                     empty = false;
                     break;
@@ -115,37 +115,14 @@ int main()
 
             if (!empty)
             {
-                for (auto* t : allTiles)
-                {
-                    if (t->m_tileId == 4)
-                    {
-                        t->m_tileId = 0;
-                        t->Update(deltaTime);
-                    }
-                    else if (t->m_tileId == 3)
-                    {
-                        t->m_tileId = 4;
-                        t->Update(deltaTime);
-                    }
-                    else if (t->m_tileId == 2)
-                    {
-                        t->m_tileId = 3;
-                        t->Update(deltaTime);
-                    }
-
-                }
-
                 while (allTiles[randInt]->m_tileId != 1) randInt = std::rand() % n;
-                allTiles[randInt]->m_tileId = 2;
-                allTiles[randInt]->Update(deltaTime);
-                std::cout << "works: " << randInt << std::endl;
+                allTiles[randInt]->m_decay = true;
             }
 
 
             loopAcc = 0.f;
         }
-
-
+        
         while (accumulator >= fixedDt)
         {
             sf::Vector2i mousePos = mouse.getPosition(window);
@@ -159,6 +136,10 @@ int main()
             std::vector<CubeTile*> allTiles = map.GetAllTiles();
             std::vector<CubeTile*> nearbyTiles = Collision::BroadPhase(allTiles, p1);
 
+            for (auto* t : allTiles)
+            {
+                t->Update(deltaTime);
+            }
 //            for (auto* t : allTiles)
 //            {
 //                t->m_bounds.m_debugColorsEnabled = true;

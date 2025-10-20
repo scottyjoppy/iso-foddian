@@ -22,6 +22,10 @@ class CubeTile
 
         int m_tileId;
 
+        bool m_decay;
+        float decayTimer;
+        float decayRate;
+
         bool debugging;
 
     public:
@@ -32,6 +36,7 @@ class CubeTile
         void Update(float deltaTime);
         void Draw(sf::RenderWindow& window);
         void SetTile(int tileId);
+        void Decay();
 
         const TileBounds& GetBounds() const { return m_bounds; }
         const sf::Vector3i& GetGridCoords() const { return m_gridCoords; }

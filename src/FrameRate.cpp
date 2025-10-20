@@ -24,7 +24,7 @@ void FrameRate::Load()
 	{
         std::cout << "Loading FrameRate text" << std::endl;
 		frameRateText.setFont(font);
-        frameRateText.setFillColor(sf::Color::Black);
+        frameRateText.setFillColor(sf::Color::White);
 	}
 }
 

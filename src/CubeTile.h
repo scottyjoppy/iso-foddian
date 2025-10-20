@@ -22,6 +22,8 @@ class CubeTile
 
         int m_tileId;
 
+        bool debugging;
+
     public:
         CubeTile(const sf::Vector2f& tileSize, sf::Vector3i gridCoords, int tileId, const sf::Vector2f& mapOffset, int logicalHeight);
         ~CubeTile();

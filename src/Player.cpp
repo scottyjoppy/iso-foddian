@@ -30,7 +30,9 @@ Player::Player(const sf::Vector2f& mapOffset, const sf::Vector2f& cellSize) :
     isJumping(false),
     m_mapOffset(mapOffset),
     m_sheetOffset(0),
-    m_wasMoving(false)
+    m_wasMoving(false),
+
+    debugging(false)
 {
     Initialize();
     Load();
@@ -48,12 +50,12 @@ void Player::Initialize()
     m_scaledTileSize = m_tileSize * m_tileScale;
     m_mapPos = Math::IsoTransform(m_gridPos, m_scaledTileSize) + m_mapOffset;
 
-//    m_shadow.setRadius(m_scaledTileSize.x / 4);
-//    m_shadow.setFillColor(sf::Color(0, 0, 0, 128));
-//    m_shadow.setOrigin(-m_scaledTileSize.x / 4.5f, -m_scaledTileSize.y * 0.5f);
-//    m_shadow.setScale(1.f, 0.5f);
-//
-//    m_shadow.setPosition(m_mapPos.x, m_mapPos.y);
+    m_shadow.setRadius(m_scaledTileSize.x / 4);
+    m_shadow.setFillColor(sf::Color(0, 0, 0, 128));
+    m_shadow.setOrigin(m_shadow.getRadius(), -m_shadow.getRadius());
+    m_shadow.setScale(1.f, 0.5f);
+
+    m_shadow.setPosition(m_mapPos.x, m_mapPos.y);
     m_sprite.setPosition(m_mapPos.x, m_mapPos.y);
 
 }
@@ -130,7 +132,7 @@ void Player::Update(float deltaTime, float acc, float friction)
     m_mapPos = Math::IsoTransform(m_gridPos, m_scaledTileSize) + m_mapOffset;
     sf::Vector2f groundPos = Math::IsoTransform(sf::Vector3f(m_gridPos.x, 1.f, m_gridPos.z), m_scaledTileSize) + m_mapOffset;
 
-    //m_shadow.setPosition(m_mapPos.x, groundPos.y);
+    m_shadow.setPosition(m_mapPos.x, groundPos.y);
     m_sprite.setPosition(m_mapPos.x, m_mapPos.y);
     
     sf::FloatRect sprGb = m_sprite.getGlobalBounds();
@@ -141,10 +143,13 @@ void Player::Update(float deltaTime, float acc, float friction)
 
 void Player::Draw(sf::RenderWindow& window)
 {
-    //window.draw(m_shadow);
+    window.draw(m_shadow);
     window.draw(m_sprite);
-    //window.draw(m_bounds);
-    //DrawFeetLine(window);
+    if (debugging)
+    {
+        window.draw(m_bounds);
+        DrawFeetLine(window);
+    }
 }
 
 void Player::SetActiveSheet(SheetID id)

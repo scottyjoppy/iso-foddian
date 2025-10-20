@@ -47,7 +47,7 @@ int main()
     bg.Load("assets/textures/background/background.png", 10, {1280, 720});
 
     Music music;
-    music.Load();
+    //music.Load();
 
     Grid grid(sf::Vector2f(windowSize), gridOffset, cellSize);
     
@@ -93,13 +93,15 @@ int main()
             }
 
 		}
-        if (loopAcc >= loopRate)
+
+        if (loopAcc >= loopRate && start)
         {
             bool empty = true;
 
             std::vector<CubeTile*> allTiles = map.GetAllTiles();
             int n = allTiles.size();
-            int rand = std::rand() % n;
+
+            int randInt = std::rand() % n;
             
             for (int i = 0; i < n; i++)
             {
@@ -110,15 +112,39 @@ int main()
                 }
             }
 
+
             if (!empty)
             {
-                while (!allTiles[rand]->m_tileId) rand = std::rand() % n;
-                allTiles[rand]->m_tileId = 0;
-                std::cout << "works: " << rand << std::endl;
+                for (auto* t : allTiles)
+                {
+                    if (t->m_tileId == 4)
+                    {
+                        t->m_tileId = 0;
+                        t->Update(deltaTime);
+                    }
+                    else if (t->m_tileId == 3)
+                    {
+                        t->m_tileId = 4;
+                        t->Update(deltaTime);
+                    }
+                    else if (t->m_tileId == 2)
+                    {
+                        t->m_tileId = 3;
+                        t->Update(deltaTime);
+                    }
+
+                }
+
+                while (allTiles[randInt]->m_tileId != 1) randInt = std::rand() % n;
+                allTiles[randInt]->m_tileId = 2;
+                allTiles[randInt]->Update(deltaTime);
+                std::cout << "works: " << randInt << std::endl;
             }
+
 
             loopAcc = 0.f;
         }
+
 
         while (accumulator >= fixedDt)
         {

@@ -46,6 +46,7 @@ class Player
         int m_sheetOffset;
         int m_lastClicked;
         bool m_wasMoving;
+        bool debugging;
 
 	public:
 		Player(const sf::Vector2f& mapOffset, const sf::Vector2f& cellSize);

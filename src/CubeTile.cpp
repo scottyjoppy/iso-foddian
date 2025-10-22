@@ -83,7 +83,6 @@ void CubeTile::SetTile(int tileId)
     else
         std::cerr << "Warning: invalid tileId " << tileId << std::endl;
     m_sprite.setOrigin(sheet.m_origin);
-
 }
 
 void CubeTile::Decay()

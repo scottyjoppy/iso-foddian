@@ -32,7 +32,7 @@ Player::Player(const sf::Vector2f& mapOffset, const sf::Vector2f& cellSize) :
     m_sheetOffset(0),
     m_wasMoving(false),
 
-    debugging(false)
+    debugging(true)
 {
     Initialize();
     Load();

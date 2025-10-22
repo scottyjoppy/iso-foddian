@@ -79,6 +79,22 @@ bool Collision::LineRect(const Line& line, const sf::FloatRect& rect)
     return false;
 }
 
+bool Collision::LineHitsGrid(const std::pair<sf::Vector3f, sf::Vector3f>& feetLine, const sf::Vector3i& gridPos)
+{
+    // Project the player's feet line onto XZ plane
+    Line line = define2DLine(feetLine);
+
+    // Represent the grid cell as a 1x1 rectangle on XZ
+    sf::FloatRect gridRect(
+        static_cast<float>(gridPos.x),
+        static_cast<float>(gridPos.z),
+        1.f, 1.f
+    );
+
+    // Check if the line crosses or ends inside that grid cell
+    return Collision::LineRect(line, gridRect);
+}
+
 bool Collision::NearTiles(const sf::Vector3f& obj1, const sf::Vector3f& obj2)
 {
     return std::abs(obj1.x - obj2.x) <= DISTANCE && std::abs(obj1.z - obj2.z) <= DISTANCE;

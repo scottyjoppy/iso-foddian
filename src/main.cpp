@@ -5,6 +5,7 @@
 #include "Tile.h"
 #include "Player.h"
 
+#include "Item.h"
 #include "DrawIso.h"
 #include "Music.h"
 #include "Background.h"
@@ -58,6 +59,8 @@ int main()
 
     Player p1(gridOffset, cellSize);
 
+    Item item(cellSize, sf::Vector3i(4, 1, 4), SheetID::Item, gridOffset, 1);
+
 	//-----GAME LOOP-----
     sf::Mouse mouse;
 	
@@ -91,6 +94,14 @@ int main()
                 p1.isJumping = true;
                 start = true;
             }
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::P))
+            {
+                std::vector<CubeTile*> allTiles = map.GetAllTiles();
+                for (auto* t : allTiles)
+                {
+                    t->m_tileId = 1;
+                }
+            }
 
 		}
 
@@ -112,13 +123,11 @@ int main()
                 }
             }
 
-
             if (!empty)
             {
                 while (allTiles[randInt]->m_tileId != 1) randInt = std::rand() % n;
                 allTiles[randInt]->m_decay = true;
             }
-
 
             loopAcc = 0.f;
         }
@@ -128,7 +137,16 @@ int main()
             sf::Vector2i mousePos = mouse.getPosition(window);
 
             if (start)
+            {
                 p1.Update(deltaTime, gravity, friction);
+                item.Update(deltaTime);
+            }
+
+            if (Collision::LineHitsGrid(p1.GetFeetLine(), item.m_gridPos))
+            {
+                std::cout << "Collides" << std::endl;
+                std::cout << item.m_gridPos.x << " " << item.m_gridPos.z << std::endl;
+            }
 
             bg.Update(deltaTime);
             fr.Update(deltaTime, p1.m_gridPos, mousePos);
@@ -140,17 +158,6 @@ int main()
             {
                 t->Update(deltaTime);
             }
-//            for (auto* t : allTiles)
-//            {
-//                t->m_bounds.m_debugColorsEnabled = true;
-//                t->Update(deltaTime);
-//            }
-//
-//            for (auto* t : nearbyTiles)
-//            {
-//                t->m_bounds.m_debugColorsEnabled = false;
-//                t->Update(deltaTime);
-//            }
 
             Collision::Resolve(p1, nearbyTiles);
 
@@ -170,7 +177,7 @@ int main()
         std::vector<CubeTile*> allTiles = map.GetAllTiles();
 
         if (start)
-            DrawIso::DrawAll(allTiles, p1, window);
+            DrawIso::DrawAll(allTiles, p1, item, window);
         else
             map.Draw(window);
 

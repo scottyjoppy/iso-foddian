@@ -1,10 +1,10 @@
 #include <iostream>
 #include "DrawIso.h"
 
-void DrawIso::DrawAll(std::vector<CubeTile*>& tiles, Player& p, sf::RenderWindow& window)
+void DrawIso::DrawAll(std::vector<CubeTile*>& tiles, Player& p, Item& i, sf::RenderWindow& window)
 {
     std::vector<Drawable> drawList;
-    drawList.reserve(tiles.size() + 1);
+    drawList.reserve(tiles.size() + 2);
 
     for (auto* t : tiles)
     {
@@ -33,11 +33,22 @@ void DrawIso::DrawAll(std::vector<CubeTile*>& tiles, Player& p, sf::RenderWindow
         );
     drawList.push_back(pEntry);
 
+    Drawable iEntry;
+    iEntry.type = DrawableType::Item;
+    iEntry.entity = &i;
+    iEntry.depth = sf::Vector3f
+        (
+         i.m_gridPos.x - 1,
+         i.m_gridPos.y + 1,
+         i.m_gridPos.z
+        );
+    drawList.push_back(iEntry);
+
     std::sort(drawList.begin(), drawList.end(),
             [](const Drawable& a, const Drawable& b)
             {
-            float depthA = a.depth.x + a.depth.z - (a.depth.y + 50);
-            float depthB = b.depth.x + b.depth.z - (b.depth.y + 50);
+            float depthA = a.depth.x + a.depth.z - (a.depth.y);
+            float depthB = b.depth.x + b.depth.z - (b.depth.y);
             return depthA < depthB;
             });
 

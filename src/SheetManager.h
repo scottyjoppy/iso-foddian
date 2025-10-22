@@ -6,7 +6,8 @@ enum class SheetID
 {
     PlayerIdle,
     PlayerWalk,
-    TileSheet
+    TileSheet,
+    Item
 };
 
 class SheetManager

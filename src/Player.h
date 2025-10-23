@@ -46,6 +46,9 @@ class Player
         int m_sheetOffset;
         int m_lastClicked;
         bool m_wasMoving;
+
+        bool showShadow;
+
         bool debugging;
 
 	public:

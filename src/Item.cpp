@@ -14,6 +14,7 @@ Item::Item(const sf::Vector2f& tileSize, sf::Vector3i gridPos, SheetID id, const
     sheetIdx(0),
     m_sheetRate(0.2f),
     m_sheetAcc(0.f),
+    showShadow(true),
     debugging(false)
 {
     SetTile(m_id);
@@ -60,8 +61,9 @@ void Item::Update(float deltaTime)
 
 void Item::Draw(sf::RenderWindow& window)
 {
+    if (showShadow)
+        window.draw(m_shadow);
     window.draw(m_sprite);
-    window.draw(m_shadow);
 }
 
 void Item::SetTile(SheetID id)

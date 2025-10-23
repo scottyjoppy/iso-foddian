@@ -154,6 +154,23 @@ int main()
             std::vector<CubeTile*> allTiles = map.GetAllTiles();
             std::vector<CubeTile*> nearbyTiles = Collision::BroadPhase(allTiles, p1);
 
+            if (Collision::TileUnder(p1.m_gridPos, nearbyTiles))
+                p1.showShadow = true;
+            else
+                p1.showShadow = false;
+
+            sf::Vector3f itemGrid = sf::Vector3f
+                (
+                 static_cast<float>(item.m_gridPos.x),
+                 static_cast<float>(item.m_gridPos.y),
+                 static_cast<float>(item.m_gridPos.z)
+                );
+
+            if (Collision::TileUnder(itemGrid, allTiles))
+                item.showShadow = true;
+            else
+                item.showShadow = false;
+
             for (auto* t : allTiles)
             {
                 t->Update(deltaTime);

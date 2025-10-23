@@ -100,6 +100,32 @@ bool Collision::NearTiles(const sf::Vector3f& obj1, const sf::Vector3f& obj2)
     return std::abs(obj1.x - obj2.x) <= DISTANCE && std::abs(obj1.z - obj2.z) <= DISTANCE;
 }
 
+bool Collision::TileUnder(const sf::Vector3f& obj, const std::vector<CubeTile*>& tiles)
+{
+    constexpr float tolerance = 0.5f;
+
+    if (obj.y < 0)
+        return false;
+
+    for (auto* t : tiles)
+    {
+        if (!t->m_tileId)
+            continue;
+
+        float dx = obj.x - t->m_gridCoords.x;
+        float dz = obj.z - t->m_gridCoords.z;
+
+        bool horizontallyAbove = (std::abs(dx) < tolerance && std::abs(dz) < tolerance);
+
+        if (horizontallyAbove)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 // ----- Resolve -----
 
 void Collision::Resolve(Player& p, const std::vector<CubeTile*>& tiles)

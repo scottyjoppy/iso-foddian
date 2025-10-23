@@ -38,8 +38,8 @@ void DrawIso::DrawAll(std::vector<CubeTile*>& tiles, Player& p, Item& i, sf::Ren
     iEntry.entity = &i;
     iEntry.depth = sf::Vector3f
         (
-         i.m_gridPos.x - 1,
-         i.m_gridPos.y + 1,
+         i.m_gridPos.x - 1.f,
+         i.m_gridPos.y - 1.f,
          i.m_gridPos.z
         );
     drawList.push_back(iEntry);

@@ -24,6 +24,8 @@ class Item
         float m_sheetRate;
         float m_sheetAcc;
 
+        bool showShadow;
+
         sf::CircleShape m_shadow;
 
         bool debugging;

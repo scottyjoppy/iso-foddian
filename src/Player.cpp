@@ -31,6 +31,7 @@ Player::Player(const sf::Vector2f& mapOffset, const sf::Vector2f& cellSize) :
     m_mapOffset(mapOffset),
     m_sheetOffset(0),
     m_wasMoving(false),
+    showShadow(true),
 
     debugging(true)
 {
@@ -143,7 +144,9 @@ void Player::Update(float deltaTime, float acc, float friction)
 
 void Player::Draw(sf::RenderWindow& window)
 {
-    window.draw(m_shadow);
+    if (showShadow)
+        window.draw(m_shadow);
+
     window.draw(m_sprite);
     if (debugging)
     {

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include <stdlib.h>
 #include <SFML/Graphics.hpp>
 
@@ -59,7 +60,7 @@ int main()
 
     Player p1(gridOffset, cellSize);
 
-    Item item(cellSize, sf::Vector3i(4, 1, 4), SheetID::Item, gridOffset, 1);
+    std::unique_ptr<Item> item;
 
 	//-----GAME LOOP-----
     sf::Mouse mouse;
@@ -81,6 +82,9 @@ int main()
         loopAcc += deltaTime;
 
 		//-----UPDATE-----
+
+        //-----UPDATE KEYPRESSES-----
+
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -94,13 +98,15 @@ int main()
                 p1.isJumping = true;
                 start = true;
             }
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::P))
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
+                map.Reset();
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::I))
             {
-                std::vector<CubeTile*> allTiles = map.GetAllTiles();
-                for (auto* t : allTiles)
-                {
-                    t->m_tileId = 1;
-                }
+                item.reset();
+                int randX = std::rand() % 10;
+                int randZ = std::rand() % 10;
+
+                item = std::make_unique<Item>(cellSize, sf::Vector3i(randX, 1, randZ), SheetID::Item, gridOffset, 1);
             }
 
 		}
@@ -139,13 +145,15 @@ int main()
             if (start)
             {
                 p1.Update(deltaTime, gravity, friction);
-                item.Update(deltaTime);
+                if (item)
+                    item->Update(deltaTime);
             }
 
-            if (Collision::LineHitsGrid(p1.GetFeetLine(), item.m_gridPos))
+            if (item && Collision::LineHitsGrid(p1.GetFeetLine(), item->m_gridPos))
             {
-                std::cout << "Collides" << std::endl;
-                std::cout << item.m_gridPos.x << " " << item.m_gridPos.z << std::endl;
+                p1.Rescue();
+                item.reset();
+                map.Reset();
             }
 
             bg.Update(deltaTime);
@@ -159,17 +167,20 @@ int main()
             else
                 p1.showShadow = false;
 
-            sf::Vector3f itemGrid = sf::Vector3f
-                (
-                 static_cast<float>(item.m_gridPos.x),
-                 static_cast<float>(item.m_gridPos.y),
-                 static_cast<float>(item.m_gridPos.z)
-                );
+            if (item)
+            {
+                sf::Vector3f itemGrid = sf::Vector3f
+                    (
+                     static_cast<float>(item->m_gridPos.x),
+                     static_cast<float>(item->m_gridPos.y),
+                     static_cast<float>(item->m_gridPos.z)
+                    );
 
-            if (Collision::TileUnder(itemGrid, allTiles))
-                item.showShadow = true;
-            else
-                item.showShadow = false;
+                if (Collision::TileUnder(itemGrid, allTiles))
+                    item->showShadow = true;
+                else
+                    item->showShadow = false;
+            }
 
             for (auto* t : allTiles)
             {
@@ -194,7 +205,7 @@ int main()
         std::vector<CubeTile*> allTiles = map.GetAllTiles();
 
         if (start)
-            DrawIso::DrawAll(allTiles, p1, item, window);
+            DrawIso::DrawAll(allTiles, p1, item.get(), window);
         else
             map.Draw(window);
 

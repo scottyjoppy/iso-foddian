@@ -32,5 +32,5 @@ struct Drawable
 class DrawIso
 {
 	public:
-        static void DrawAll(std::vector<CubeTile*>& tiles, Player& p, Item& i, sf::RenderWindow& window);
+        static void DrawAll(std::vector<CubeTile*>& tiles, Player& p, Item* i, sf::RenderWindow& window);
 };

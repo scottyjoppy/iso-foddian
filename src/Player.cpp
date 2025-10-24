@@ -236,3 +236,9 @@ void Player::UpdateSheet(bool isMoving, float deltaTime)
 
     m_wasMoving = isMoving;
 }
+
+void Player::Rescue()
+{
+    if (m_gridPos.y < 0)
+        m_gridPos.y = 2;
+}

@@ -65,4 +65,5 @@ class Player
         std::pair<sf::Vector3f, sf::Vector3f> GetFeetLine() const;
         void DrawFeetLine(sf::RenderWindow& window);
         void UpdateSheet(bool isMoving, float deltaTime);
+        void Rescue();
 };

@@ -82,3 +82,15 @@ std::vector<CubeTile*> TileMap::GetAllTiles()
     }
     return allTiles;
 }
+
+void TileMap::Reset()
+{
+    std::vector<CubeTile*> allTiles = GetAllTiles();
+
+    for (auto* t : allTiles)
+    {
+        t->decayTimer = t->decayRate;
+        t->m_decay = false;
+        t->m_tileId = 1;
+    }
+}

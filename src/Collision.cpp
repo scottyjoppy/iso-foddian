@@ -91,6 +91,9 @@ bool Collision::LineHitsGrid(const std::pair<sf::Vector3f, sf::Vector3f>& feetLi
         1.f, 1.f
     );
 
+    if (feetLine.first.y < -1.f)
+        return false;
+
     // Check if the line crosses or ends inside that grid cell
     return Collision::LineRect(line, gridRect);
 }

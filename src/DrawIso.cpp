@@ -1,7 +1,7 @@
 #include <iostream>
 #include "DrawIso.h"
 
-void DrawIso::DrawAll(std::vector<CubeTile*>& tiles, Player& p, Item& i, sf::RenderWindow& window)
+void DrawIso::DrawAll(std::vector<CubeTile*>& tiles, Player& p, Item* i, sf::RenderWindow& window)
 {
     std::vector<Drawable> drawList;
     drawList.reserve(tiles.size() + 2);
@@ -33,16 +33,19 @@ void DrawIso::DrawAll(std::vector<CubeTile*>& tiles, Player& p, Item& i, sf::Ren
         );
     drawList.push_back(pEntry);
 
-    Drawable iEntry;
-    iEntry.type = DrawableType::Item;
-    iEntry.entity = &i;
-    iEntry.depth = sf::Vector3f
-        (
-         i.m_gridPos.x - 1.f,
-         i.m_gridPos.y - 1.f,
-         i.m_gridPos.z
-        );
-    drawList.push_back(iEntry);
+    if (i)
+    {
+        Drawable iEntry;
+        iEntry.type = DrawableType::Item;
+        iEntry.entity = i;
+        iEntry.depth = sf::Vector3f
+            (
+             i->m_gridPos.x - 1.f,
+             i->m_gridPos.y - 1.f,
+             i->m_gridPos.z
+            );
+        drawList.push_back(iEntry);
+    }
 
     std::sort(drawList.begin(), drawList.end(),
             [](const Drawable& a, const Drawable& b)

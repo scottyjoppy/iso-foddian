@@ -29,4 +29,5 @@ class TileMap
         void Draw(sf::RenderWindow& window);
 
         std::vector<CubeTile*> GetAllTiles();
+        void Reset();
 };

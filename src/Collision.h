@@ -20,7 +20,7 @@ class Collision
         static bool LineRect(const Line& line, const sf::FloatRect& rect);
         static bool LineHitsGrid(const std::pair<sf::Vector3f, sf::Vector3f>& feetLine, const sf::Vector3i& gridPos);
         static bool TileUnder(const sf::Vector3f& obj, const std::vector<CubeTile*>& tiles);
-        static bool NearTiles(const sf::Vector3f& obj1, const sf::Vector3f& obj2);
+        static bool NearTiles(const sf::Vector3f& obj1, const sf::Vector3f& obj2, const float tolerance = 1.5f);
         static void Resolve(Player& p, const std::vector<CubeTile*>& tiles);
         static std::vector<CubeTile*> BroadPhase(std::vector<CubeTile*>& allTiles, Player& p);
 };

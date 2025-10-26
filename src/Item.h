@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
+#include <memory>
 #include "SheetManager.h"
 
 class Item
@@ -38,4 +39,5 @@ class Item
         void Update(float deltaTime);
         void Draw(sf::RenderWindow& window);
         void SetTile(SheetID id);
+        static std::unique_ptr<Item> Create(const sf::Vector2f& tileSize, const sf::Vector2f& mapOffset);
 };

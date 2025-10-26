@@ -77,3 +77,11 @@ void Item::SetTile(SheetID id)
         std::cerr << "Warning: invalid id " << std::endl;
     m_sprite.setOrigin(sheet.m_origin);
 }
+
+std::unique_ptr<Item> Item::Create(const sf::Vector2f& tileSize, const sf::Vector2f& mapOffset)
+{
+    int randX = std::rand() % 10;
+    int randZ = std::rand() % 10;
+
+    return std::make_unique<Item>(tileSize, sf::Vector3i(randX, 1, randZ), SheetID::Item, mapOffset, 1);
+}

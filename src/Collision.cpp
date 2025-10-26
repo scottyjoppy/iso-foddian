@@ -7,8 +7,6 @@
 #include "TileBounds.h"
 #include "Collision.h"
 
-#define DISTANCE 1.5
-
 // ----- Helper Function -----
 
 Line define2DLine(const std::pair<sf::Vector3f, sf::Vector3f>& feetLine)
@@ -98,14 +96,14 @@ bool Collision::LineHitsGrid(const std::pair<sf::Vector3f, sf::Vector3f>& feetLi
     return Collision::LineRect(line, gridRect);
 }
 
-bool Collision::NearTiles(const sf::Vector3f& obj1, const sf::Vector3f& obj2)
+bool Collision::NearTiles(const sf::Vector3f& obj1, const sf::Vector3f& obj2, const float tolerance)
 {
-    return std::abs(obj1.x - obj2.x) <= DISTANCE && std::abs(obj1.z - obj2.z) <= DISTANCE;
+    return std::abs(obj1.x - obj2.x) <= tolerance && std::abs(obj1.z - obj2.z) <= tolerance;
 }
 
 bool Collision::TileUnder(const sf::Vector3f& obj, const std::vector<CubeTile*>& tiles)
 {
-    constexpr float tolerance = 0.5f;
+    const float tolerance = 0.5f;
 
     if (obj.y < 0)
         return false;
@@ -121,9 +119,7 @@ bool Collision::TileUnder(const sf::Vector3f& obj, const std::vector<CubeTile*>&
         bool horizontallyAbove = (std::abs(dx) < tolerance && std::abs(dz) < tolerance);
 
         if (horizontallyAbove)
-        {
             return true;
-        }
     }
 
     return false;

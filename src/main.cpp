@@ -28,6 +28,7 @@ int main()
     float bounce = 0.9f;
     float friction = 0.999f;
     float fps = 60.f;
+    float nearSize = 0.5f;
 
     sf::Vector2f cellSize = {32, 16};
     sf::Vector2f scaledCellSize = cellSize * Math::CalcScale(cellSize);
@@ -49,7 +50,7 @@ int main()
     bg.Load("assets/textures/background/background.png", 10, {1280, 720});
 
     Music music;
-    //music.Load();
+    music.Load();
 
     Grid grid(sf::Vector2f(windowSize), gridOffset, cellSize);
     
@@ -102,42 +103,31 @@ int main()
                 map.Reset();
             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::I))
             {
-                item.reset();
-                int randX = std::rand() % 10;
-                int randZ = std::rand() % 10;
-
-                item = std::make_unique<Item>(cellSize, sf::Vector3i(randX, 1, randZ), SheetID::Item, gridOffset, 1);
+                item = Item::Create(cellSize, gridOffset);
             }
 
 		}
 
         if (loopAcc >= loopRate && start)
         {
-            bool empty = true;
-
             std::vector<CubeTile*> allTiles = map.GetAllTiles();
-            int n = allTiles.size();
 
-            int randInt = std::rand() % n;
-            
-            for (int i = 0; i < n; i++)
+            for (auto* t : allTiles)
             {
-                if (allTiles[i]->m_tileId && allTiles[i]->m_tileId != 2 && allTiles[i]->m_tileId != 3 && allTiles[i]->m_tileId != 4)
+                sf::Vector3f tileGrid = sf::Vector3f
+                    (
+                     static_cast<float>(t->m_gridCoords.x),
+                     static_cast<float>(t->m_gridCoords.y),
+                     static_cast<float>(t->m_gridCoords.z)
+                    );
+
+                if (Collision::NearTiles(tileGrid, p1.m_gridPos, nearSize) && !p1.isJumping)
                 {
-                    empty = false;
-                    break;
+                    t->m_decay = true;
                 }
             }
-
-            if (!empty)
-            {
-                while (allTiles[randInt]->m_tileId != 1) randInt = std::rand() % n;
-                allTiles[randInt]->m_decay = true;
-            }
-
-            loopAcc = 0.f;
         }
-        
+
         while (accumulator >= fixedDt)
         {
             sf::Vector2i mousePos = mouse.getPosition(window);
@@ -154,11 +144,12 @@ int main()
                 p1.Rescue();
                 item.reset();
                 map.Reset();
+                nearSize += 0.5f;
             }
 
             bg.Update(deltaTime);
             fr.Update(deltaTime, p1.m_gridPos, mousePos);
-            
+
             std::vector<CubeTile*> allTiles = map.GetAllTiles();
             std::vector<CubeTile*> nearbyTiles = Collision::BroadPhase(allTiles, p1);
 
